@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:weightSum="1"
+    android:background="#ffffff">
+
+
+    <LinearLayout
+        android:id="@+id/linTop"
+        android:layout_width="match_parent"
+        android:layout_height="34dp"
+        android:orientation="horizontal"
+        android:layout_marginTop="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_weight="0.24">
+
+        <TextView
+            android:id="@+id/txtShowOfficer"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:text="New Text"
+            android:textSize="18sp" />
+        <TextView
+            android:id="@+id/txtShowDateTime"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="3"
+            android:gravity="right"
+            android:text="TextView"
+            android:textSize="16sp"
+            android:textStyle="italic" />
+
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.07"
+        android:orientation="vertical"
+        android:id="@+id/linear_order"
+        android:layout_alignBottom="@+id/linear_cook"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+
+        android:layout_alignTop="@+id/linear_cook"
+        android:layout_toRightOf="@+id/linear_cook"
+        android:layout_toEndOf="@+id/linear_cook">
+
+
+        <Button
+            android:id="@+id/btt_order"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:onClick="clickOrder"
+            android:layout_marginTop="43dp"
+            android:text="รับ Order"
+            android:textSize="25sp"/>
+
+        <Button
+            android:id="@+id/btt_cook"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginTop="43dp"
+            android:onClick="clickCook"
+            android:text="ห้องครัว"
+            android:textSize="25sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_weight="0.07"
+        android:id="@+id/linear_cook"
+        android:layout_marginTop="110dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true">
+
+        <ImageView
+            android:id="@+id/image_order"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_gravity="center_horizontal"
+            android:src="@drawable/order_icon" />
+
+        <ImageView
+            android:id="@+id/image_cook"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_gravity="center_horizontal"
+            android:src="@drawable/cook_icon" />
+    </LinearLayout>
+
+
+</RelativeLayout>
