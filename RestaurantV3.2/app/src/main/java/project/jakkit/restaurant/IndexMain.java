@@ -54,7 +54,7 @@ public class IndexMain extends ActionBarActivity {
                             public void run() {
                                 TextView time = (TextView) findViewById(R.id.txtShowDateTime);
                                 long date = System.currentTimeMillis();
-                                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy  HH : mm : ss");
+                                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                                 String dateString = sdf.format(date);
                                 time.setText(dateString);
                             }
@@ -68,17 +68,19 @@ public class IndexMain extends ActionBarActivity {
     }
 
     public void clickOrder(View view){
-        Button btn_oko = (Button)findViewById(R.id.btt_order);
         Intent intent = new Intent(IndexMain.this, TableActivity.class);
         intent.putExtra("Officer", strOfficer);
         intent.putExtra("IDofficer", strUserID);
         startActivity(intent);
     }
     public void clickCook(View view){
-        Button btn_okc = (Button)findViewById(R.id.btt_cook);
         Intent intent = new Intent(IndexMain.this, ListCookActivity.class);
         intent.putExtra("Officer", strOfficer);
         intent.putExtra("IDofficer", strUserID);
+        startActivity(intent);
+    }
+    public void clicklogout(View view){
+        Intent intent = new Intent(IndexMain.this, MainActivity.class);
         startActivity(intent);
     }
 }

@@ -2,15 +2,83 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingTop="8dp"
     android:background="#ffffff">
 
+    <LinearLayout
+        android:id="@+id/linTop1"
+        android:layout_width="match_parent"
+        android:layout_height="34dp"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
+        android:orientation="horizontal"
+        android:layout_marginTop="5dp"
+        android:layout_weight="0.24">
+
+        <TextView
+            android:id="@+id/txtShowOfficer"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:text="New Text"
+            android:textSize="16sp" />
+        <Button
+            android:id="@+id/btt_logout"
+            android:layout_width="15dp"
+            android:layout_height="30dp"
+            android:layout_weight="1"
+            android:background="#FF0000"
+            android:onClick="clicklogout"
+            android:text="Logout"
+            android:textColor="#ffffff"
+            android:textSize="16sp" />
+        <TextView
+            android:id="@+id/txtShowDateTime"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="3"
+            android:gravity="right"
+            android:text="TextView"
+            android:textSize="14sp"
+            android:textStyle="italic" />
+    </LinearLayout>
+    <LinearLayout
+        android:orientation="horizontal"
+        android:id="@+id/linMenu"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:weightSum="1"
+        android:layout_marginTop="5dp"
+        android:layout_below="@+id/linTop1">
+
+        <Button
+            android:id="@+id/btt_order"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:layout_weight="1.02"
+            android:background="#ffb400"
+            android:text="สั่งอาหาร"
+            android:textColor="#ffffff"
+            android:textSize="25sp"
+            android:onClick="clickOrder"/>
+
+        <Button
+            android:id="@+id/btt_cook"
+            android:layout_width="186dp"
+            android:layout_height="50dp"
+            android:background="#ffb400"
+            android:text="อาหารที่สั่ง"
+            android:textColor="#53d081"
+            android:textSize="25sp"
+            android:textStyle="bold" />
+    </LinearLayout>
     <LinearLayout
         android:id="@+id/linDate"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_weight="0.15"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:layout_below="@+id/linMenu">
 
         <TextView
             android:id="@+id/txtShowTable"
@@ -28,13 +96,14 @@
         android:id="@+id/linTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:weightSum="1"
-        android:layout_below="@+id/linDate"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_marginTop="12dp">
+        android:layout_below="@+id/linDate"
+        android:layout_marginTop="10dp"
+        android:background="#f0f0f0"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:weightSum="1">
 
         <TextView
             android:id="@+id/txtIdFood"
@@ -42,9 +111,9 @@
             android:layout_height="wrap_content"
             android:gravity="center_vertical|center_horizontal"
             android:text="FOOD ID"
+            android:textColor="#4682b4"
             android:textSize="16sp"
-            android:textStyle="bold"
-            android:textColor="#4682b4" />
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/txtFood"
@@ -53,9 +122,9 @@
             android:layout_weight="0.44"
             android:gravity="center_vertical|center_horizontal"
             android:text="ชื่ออาหาร"
+            android:textColor="#4682b4"
             android:textSize="18sp"
-            android:textStyle="bold"
-            android:textColor="#4682b4"/>
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/txtHot"
@@ -72,12 +141,12 @@
             android:id="@+id/txtVolume"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center_vertical|center_horizontal"
             android:layout_weight="0.16"
+            android:gravity="center_vertical|center_horizontal"
             android:text="จำนวน"
+            android:textColor="#4682b4"
             android:textSize="18sp"
-            android:textStyle="bold"
-            android:textColor="#4682b4"/>
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/txtPrice"
@@ -93,7 +162,7 @@
     <ListView
         android:id="@+id/listOrder"
         android:layout_width="wrap_content"
-        android:layout_height="250dp"
+        android:layout_height="270dp"
         android:layout_below="@+id/linTitle"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />

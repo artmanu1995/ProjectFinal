@@ -31,6 +31,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.Statement;
+import java.text.SimpleDateFormat;
 
 /**
  * Created by KHAMMA on 04/09/2017.
@@ -43,10 +44,9 @@ public class ListOrderActivity extends ActionBarActivity {
     private OrderTABLE objOrderTABLE;
     private ListOrderTABLE objListOrderTABLE;
     private FoodTABLE objFoodTABLE;
-    private TextView txtShowTable;
-    private TextView txtShowTotal;
-    private TextView txtShowTotal2;
-    private String strTable, strFoodID, strNameFood, strHotLevel, strAmount, strPriceFood,strOpenID,strDefaultSttSend = "1";
+    private TextView txtShowTable, txtShowOfficer, txtShowTotal;
+    private String strTable, strFoodID, strNameFood, strHotLevel, strAmount, strPriceFood,
+            strOpenID,strDefaultSttSend = "1",strOfficer, strUserID, strDate;
     private Integer intTotal = 0, intPrice, intAmount;
 
     ConnectionClass connectionClass;
@@ -72,16 +72,83 @@ public class ListOrderActivity extends ActionBarActivity {
         bindWidget();
 
         showTable();
+        showOfficer();
+        getOfficerID();
+        getDate();
+        showDate();
 
 //        setOrder();
+        /*SELECT SUM(	listO_amount*food_price) AS Total
+        FROM data_listorder
+        INNER JOIN data_order ON  data_listorder.listO_id = data_order.listO_id
+        INNER JOIN data_foods ON  data_listorder.food_id = data_foods.food_id
+        WHERE (table_id=1) AND (order_date='2017-09-13') AND (sttSO_id=1)*/
 
         createListView1();
+    }
+    private void bindWidget() {
+        txtShowTable = (TextView) findViewById(R.id.txtShowTable);
+        txtShowTotal = (TextView) findViewById(R.id.txtShowTotal);
+        ListOrder = (ListView)findViewById(R.id.listOrder);
+        txtShowOfficer = (TextView) findViewById(R.id.txtShowOfficer);
     }
     private void clearAllOrder() {
         SQLiteDatabase objSqLiteDatabase = openOrCreateDatabase("restaurantV4.db", MODE_PRIVATE, null);
         objSqLiteDatabase.delete("showoTABLE",null, null);
     }
-
+    private void showOfficer() {
+        strOfficer = getIntent().getExtras().getString("Officer");
+        txtShowOfficer.setText(strOfficer);
+    }
+    private void getOfficerID() {
+        strUserID = getIntent().getExtras().getString("IDofficer");
+    }
+    private void showDate() {
+        Thread t = new Thread() {
+            @Override
+            public void run() {
+                try {
+                    while (!isInterrupted()) {
+                        Thread.sleep(1000);
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                TextView time = (TextView) findViewById(R.id.txtShowDateTime);
+                                long date = System.currentTimeMillis();
+                                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                                String dateString = sdf.format(date);
+                                time.setText(dateString);
+                            }
+                        });
+                    }
+                } catch (InterruptedException e) {
+                }
+            }
+        };
+        t.start();
+    }
+    private void getDate() {
+        Thread t = new Thread() {
+            @Override
+            public void run() {
+                try {
+                    while (!isInterrupted()) {
+                        Thread.sleep(1000);
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                long date = System.currentTimeMillis();
+                                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                                strDate = sdf.format(date);
+                            }
+                        });
+                    }
+                } catch (InterruptedException e) {
+                }
+            }
+        };
+        t.start();
+    }
     private void showTable() {
         strTable = getIntent().getExtras().getString("Table");
         txtShowTable.setText(strTable);
@@ -167,11 +234,11 @@ public class ListOrderActivity extends ActionBarActivity {
         progressDialog.setMessage("Loading...");
         progressDialog.show();
     }
-    /*                String to Int
+    /*               - String to Int
                     String aString = “78”;
                     int aInt = Integer.parseInt(aString);
 
-                Int To String
+                     - Int To String
                     int aInt = 1;
                     String aString = Integer.toString(aInt);
     */
@@ -188,7 +255,7 @@ public class ListOrderActivity extends ActionBarActivity {
             String strJSON = "";
             try {
                 HttpClient objHttpClient = new DefaultHttpClient();
-                HttpPost objHttpPost = new HttpPost("http://192.168.1.31/join_order.php");
+                HttpPost objHttpPost = new HttpPost("http://192.168.1.90/join_order.php");
                 HttpResponse objHttpResponse = objHttpClient.execute(objHttpPost);
                 HttpEntity objHttpEntity = objHttpResponse.getEntity();
                 objInputStream = objHttpEntity.getContent();
@@ -251,10 +318,15 @@ public class ListOrderActivity extends ActionBarActivity {
         Log.d("addshow", "OpenID ==> " + strOpenID);
         Log.d("addshow", "Table ==> " + strTable);
     }
-    private void bindWidget() {
-        txtShowTable = (TextView) findViewById(R.id.txtShowTable);
-//        txtShowTotal = (TextView) findViewById(R.id.txtShowTotal);
- //       txtShowTotal2 = (TextView) findViewById(R.id.txtShowTotal2);
-        ListOrder = (ListView)findViewById(R.id.listOrder);
+    public void clickOrder(View view){
+        Intent intent = new Intent(ListOrderActivity.this, OrderActivity.class);
+        intent.putExtra("Officer", strOfficer);
+        intent.putExtra("IDofficer", strUserID);
+        intent.putExtra("Table", strTable);
+        startActivity(intent);
+    }
+    public void clicklogout(View view){
+        Intent intent = new Intent(ListOrderActivity.this, MainActivity.class);
+        startActivity(intent);
     }
 }

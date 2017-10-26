@@ -43,7 +43,7 @@ public class OrderActivity extends ActionBarActivity {
 
     private FoodTABLE objFoodTABLE;
     private ListView myListView;
-    private TextView txtShowTable;
+    private TextView txtShowTable, txtShowOfficer;
     private String strOfficer, strTable, strFood, strAmount, strHotLevel, strPrice, strNumFood, strUserID, strDate;
 
     private int intListO=1;
@@ -63,9 +63,10 @@ public class OrderActivity extends ActionBarActivity {
         objFoodTABLE = new FoodTABLE(this);
 
         showTable();
-        getOfficer();
+        showOfficer();
         getOfficerID();
         getDate();
+        showDate();
 
         //Synchronize JSON to SQLite
         synJSONtoSQLite();
@@ -76,9 +77,67 @@ public class OrderActivity extends ActionBarActivity {
         synJSONgetListOrder();
 
     }   // onCreate
-
+    private void bindWidget() {
+        myListView = (ListView)findViewById(R.id.listView);
+        txtShowTable = (TextView)findViewById(R.id.txtShowTable);
+        txtShowOfficer = (TextView) findViewById(R.id.txtShowOfficer);
+    }
+    private void showTable(){
+        strTable = getIntent().getExtras().getString("Table");
+        txtShowTable.setText(strTable);
+    }
+    private void showOfficer() {
+        strOfficer = getIntent().getExtras().getString("Officer");
+        txtShowOfficer.setText(strOfficer);
+    }
     private void getOfficerID() {
         strUserID = getIntent().getExtras().getString("IDofficer");
+    }
+    private void showDate() {
+        Thread t = new Thread() {
+            @Override
+            public void run() {
+                try {
+                    while (!isInterrupted()) {
+                        Thread.sleep(1000);
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                TextView time = (TextView) findViewById(R.id.txtShowDateTime);
+                                long date = System.currentTimeMillis();
+                                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                                String dateString = sdf.format(date);
+                                time.setText(dateString);
+                            }
+                        });
+                    }
+                } catch (InterruptedException e) {
+                }
+            }
+        };
+        t.start();
+    }
+    private void getDate() {
+        Thread t = new Thread() {
+            @Override
+            public void run() {
+                try {
+                    while (!isInterrupted()) {
+                        Thread.sleep(1000);
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                long date = System.currentTimeMillis();
+                                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                                strDate = sdf.format(date);
+                            }
+                        });
+                    }
+                } catch (InterruptedException e) {
+                }
+            }
+        };
+        t.start();
     }
     private void createListView() {
         final String[] strListNumFood = objFoodTABLE.readAllNumFood();
@@ -103,29 +162,6 @@ public class OrderActivity extends ActionBarActivity {
         });
 
     }   // createListView
-    private void getDate() {
-        Thread t = new Thread() {
-            @Override
-            public void run() {
-                try {
-                    while (!isInterrupted()) {
-                        Thread.sleep(1000);
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                long date = System.currentTimeMillis();
-                                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                                strDate = sdf.format(date);
-                            }
-                        });
-                    }
-                } catch (InterruptedException e) {
-                }
-            }
-        };
-        t.start();
-    }
-
     private void chooseItem() {
         CharSequence[] charItem = {"1 จาน", "2 จาน", "3 จาน", "3 จาน", "5 จาน",};
 
@@ -260,39 +296,10 @@ public class OrderActivity extends ActionBarActivity {
             }
             return z;
     }
-
     protected void onPreExecute() {
         progressDialog.setMessage("Loading...");
         progressDialog.show();
     }
-
-    private void bindWidget() {
-        myListView = (ListView)findViewById(R.id.listView);
-        txtShowTable = (TextView)findViewById(R.id.txtShowTable);
-    }
-    private void getOfficer() {
-        strOfficer = getIntent().getExtras().getString("Officer");
-    }
-
-    private void showTable(){
-        strTable = getIntent().getExtras().getString("Table");
-        txtShowTable.setText(strTable);
-    }
-
-    public void Click(View view){
-        Button btn_ok = (Button)findViewById(R.id.button1);
-        Intent intent = new Intent(OrderActivity.this, ListOrderActivity.class);
-        intent.putExtra("Officer", strOfficer);
-        intent.putExtra("Table", strTable);
-        intent.putExtra("IdFood",strNumFood);
-        intent.putExtra("Food",strFood);
-        intent.putExtra("Price",strPrice);
-        intent.putExtra("Volume",strAmount);
-        intent.putExtra("IDofficer", strUserID);
-
-        startActivity(intent);
-    }
-
     private void synJSONtoSQLite() {
         //Setup New Policy
         if (Build.VERSION.SDK_INT > 9) {
@@ -304,7 +311,7 @@ public class OrderActivity extends ActionBarActivity {
         String strJSON = "";
         try {
             HttpClient objHttpClient = new DefaultHttpClient();
-            HttpPost objHttpPost = new HttpPost("http://192.168.1.31/connect_food.php");
+            HttpPost objHttpPost = new HttpPost("http://192.168.1.90/connect_food.php");
             HttpResponse objHttpResponse = objHttpClient.execute(objHttpPost);
             HttpEntity objHttpEntity = objHttpResponse.getEntity();
             objInputStream = objHttpEntity.getContent();
@@ -357,7 +364,7 @@ public class OrderActivity extends ActionBarActivity {
         try {
 
             HttpClient objHttpClient = new DefaultHttpClient();
-            HttpPost objHttpPost = new HttpPost("http://192.168.1.31/get_list_order.php");
+            HttpPost objHttpPost = new HttpPost("http://192.168.1.90/get_list_order.php");
             HttpResponse objHttpResponse = objHttpClient.execute(objHttpPost);
             HttpEntity objHttpEntity = objHttpResponse.getEntity();
             objInputStream = objHttpEntity.getContent();
@@ -394,6 +401,17 @@ public class OrderActivity extends ActionBarActivity {
         } catch (Exception e) {
             Log.d("oic", "Update ==> " + e.toString());
         }
+    }
+    public void clicklogout(View view){
+        Intent intent = new Intent(OrderActivity.this, MainActivity.class);
+        startActivity(intent);
+    }
+    public void clickListOrder(View view){
+        Intent intent = new Intent(OrderActivity.this, ListOrderActivity.class);
+        intent.putExtra("Officer", strOfficer);
+        intent.putExtra("IDofficer", strUserID);
+        intent.putExtra("Table", strTable);
+        startActivity(intent);
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

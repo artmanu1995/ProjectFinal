@@ -180,7 +180,7 @@ public class MainActivity extends ActionBarActivity {
 
         try {
             HttpClient objHttpClient = new DefaultHttpClient();
-            HttpPost objHttpPost = new HttpPost("http://192.168.1.31/connect_get_user.php");
+            HttpPost objHttpPost = new HttpPost("http://192.168.1.90/connect_get_user.php");
             HttpResponse objHttpResponse = objHttpClient.execute(objHttpPost);
             HttpEntity objHttpEntity = objHttpResponse.getEntity();
             objInputStream = objHttpEntity.getContent();

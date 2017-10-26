@@ -1,22 +1,92 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
-    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
+    android:layout_height="match_parent"
+    android:paddingLeft="0dp"
+    android:paddingRight="0dp"
+    android:paddingTop="0dp"
     android:paddingBottom="@dimen/activity_vertical_margin"
     tools:context="project.jakkit.restaurant.OrderActivity"
     android:background="#ffffff">
 
     <LinearLayout
+        android:id="@+id/linTop1"
+        android:layout_width="match_parent"
+        android:layout_height="34dp"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
+        android:orientation="horizontal"
+        android:layout_marginTop="5dp"
+        android:layout_weight="0.24">
+
+        <TextView
+            android:id="@+id/txtShowOfficer"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:text="New Text"
+            android:textSize="16sp" />
+        <Button
+            android:id="@+id/btt_logout"
+            android:layout_width="15dp"
+            android:layout_height="30dp"
+            android:layout_weight="1"
+            android:background="#FF0000"
+            android:onClick="clicklogout"
+            android:text="Logout"
+            android:textColor="#ffffff"
+            android:textSize="16sp" />
+        <TextView
+            android:id="@+id/txtShowDateTime"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="3"
+            android:gravity="right"
+            android:text="TextView"
+            android:textSize="14sp"
+            android:textStyle="italic" />
+    </LinearLayout>
+    <LinearLayout
+        android:orientation="horizontal"
+        android:id="@+id/linMenu"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:weightSum="1"
+        android:layout_marginTop="5dp"
+        android:layout_below="@+id/linTop1">
+
+        <Button
+            android:id="@+id/btt_order"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:layout_weight="1.02"
+            android:background="#ffb400"
+            android:text="สั่งอาหาร"
+            android:textColor="#53d081"
+            android:textSize="25sp"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/btt_cook"
+            android:layout_width="186dp"
+            android:layout_height="50dp"
+            android:background="#ffb400"
+            android:onClick="clickListOrder"
+            android:text="อาหารที่สั่ง"
+            android:textColor="#ffffff"
+            android:textSize="25sp" />
+    </LinearLayout>
+    <LinearLayout
         android:orientation="horizontal"
         android:id="@+id/linTop"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/linMenu"
+        android:layout_marginTop="10dp">
 
         <TextView
             android:id="@+id/txtShowTable"
-            android:layout_width="0dp"
-            android:layout_height="50dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center_horizontal"
             android:text="New Text"
@@ -25,15 +95,19 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/linearLayout2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="0.04"
-        android:orientation="horizontal"
-        android:weightSum="1"
-        android:id="@+id/linearLayout2"
-        android:layout_below="@+id/linTop"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true">
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/linTop"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_weight="0.04"
+        android:background="#f0f0f0"
+        android:orientation="horizontal"
+        android:weightSum="1">
 
         <TextView
             android:id="@+id/txtTitleNF"
@@ -59,41 +133,22 @@
         <TextView
             android:id="@+id/txtTitleP"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:gravity=""
             android:text="ราคา"
             android:textColor="#4682b4"
             android:textSize="25dp"
             android:textStyle="bold" />
     </LinearLayout>
-
-    <LinearLayout
-        android:orientation="horizontal"
-        android:id="@+id/linList"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content">
-
-    </LinearLayout>
-
-    <Button
-        android:id="@+id/button1"
-        android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:onClick="Click"
-        android:text="รายการอาหารที่สั่ง"
-        android:textSize="18sp"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
-
     <ListView
         android:id="@+id/listView"
         android:layout_width="wrap_content"
         android:layout_height="296dp"
-        android:layout_above="@+id/button1"
+        android:layout_marginRight="10dp"
+        android:layout_marginLeft="10dp"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_below="@+id/linearLayout2" />
-
-
+        android:layout_below="@+id/linearLayout2"
+        android:layout_marginTop="5dp"
+        android:layout_alignParentBottom="true" />
 </RelativeLayout>

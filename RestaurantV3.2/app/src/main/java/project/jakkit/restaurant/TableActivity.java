@@ -322,7 +322,7 @@ public class TableActivity extends ActionBarActivity {
                             public void run() {
                                 TextView time = (TextView) findViewById(R.id.txtShowDateTime);
                                 long date = System.currentTimeMillis();
-                                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy  HH : mm : ss");
+                                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                                 String dateString = sdf.format(date);
                                 time.setText(dateString);
                             }
@@ -630,6 +630,10 @@ public class TableActivity extends ActionBarActivity {
  //           Toast.makeText(getApplicationContext(), "โต๊ะไม่ได้เปิดใช้งาน", Toast.LENGTH_SHORT).show();
         }
     }
+    public void clicklogout(View view){
+        Intent intent = new Intent(TableActivity.this, MainActivity.class);
+        startActivity(intent);
+    }
 
     private void synJSONstatusTable() {
         //Setup New Policy
@@ -643,7 +647,7 @@ public class TableActivity extends ActionBarActivity {
         try {
 
             HttpClient objHttpClient = new DefaultHttpClient();
-            HttpPost objHttpPost = new HttpPost("http://192.168.1.31/get_data_table.php");
+            HttpPost objHttpPost = new HttpPost("http://192.168.1.90/get_data_table.php");
             HttpResponse objHttpResponse = objHttpClient.execute(objHttpPost);
             HttpEntity objHttpEntity = objHttpResponse.getEntity();
             objInputStream = objHttpEntity.getContent();

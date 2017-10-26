@@ -66,7 +66,7 @@ public class ListCookOutActivity extends ActionBarActivity {
         String strJSON = "";
         try {
             HttpClient objHttpClient = new DefaultHttpClient();
-            HttpPost objHttpPost = new HttpPost("http://192.168.1.31/join_order_out.php");
+            HttpPost objHttpPost = new HttpPost("http://192.168.1.90/join_order_out.php");
             HttpResponse objHttpResponse = objHttpClient.execute(objHttpPost);
             HttpEntity objHttpEntity = objHttpResponse.getEntity();
             objInputStream = objHttpEntity.getContent();
