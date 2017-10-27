@@ -253,24 +253,32 @@ public class ListOrderActivity extends ActionBarActivity {
                     String strOpenID = objJSONObject.getString("order_openTable");
                     String strTableID =objJSONObject.getString("table_id");
                     String strFoodID = objJSONObject.getString("food_id");
-                    String strAmount = objJSONObject.getString("listO_amount");
+                    String strAmount = objJSONObject.getString("order_amount");
                     String strHotLevel = objJSONObject.getString("listO_hot");
                     Integer intAmount = Integer.parseInt(strAmount);
+                    String strHotName;
+
+                    if (strHotLevel.equals("1")){
+                        strHotName = "เผ็ดน้อย";
+                    }else if (strHotLevel.equals("2")){
+                        strHotName = "เผ็ดปานกลาง";
+                    }else {
+                        strHotName = "เผ็ดมาก";
+                    }
 
  //                   Log.d("table", "TablePage ==> " + strTable);
  //                  Log.d("table", "TableJSON ==> " + strTableID);
-
-                        if (strTableID.equals(strTable)){
+                    if (strTableID.equals(strTable)){
                             try {
                                 String strSynFoodResult[] = objFoodTABLE.searchFood(strFoodID);
                                 strFoodID = strSynFoodResult[0];
                                 String strNameFood = strSynFoodResult[1];
                                 String strPriceFood = strSynFoodResult[2];
                                 Integer intPrice = Integer.parseInt(strPriceFood);
-                                long AddValue = objShowOrderTABLE.addValueToShowOrder(strOpenID, strFoodID, strNameFood, strHotLevel, intAmount, intPrice);
+                                long AddValue = objShowOrderTABLE.addValueToShowOrder(strOpenID, strFoodID, strNameFood, strHotName, intAmount, intPrice);
                             } catch (Exception e) {
                             }
-                        }
+                    }
                 }
             } catch (Exception e) {
                 Log.d("oic", "Update ==> " + e.toString());
@@ -290,12 +298,12 @@ public class ListOrderActivity extends ActionBarActivity {
             if (con == null) {
                 z = "Please check internet connection";
             } else {
-                String strTotal = "SELECT SUM(listO_amount*food_price) AS Total FROM data_listorder INNER JOIN data_order ON  data_listorder.listO_id = data_order.listO_id INNER JOIN data_foods ON  data_listorder.food_id = data_foods.food_id WHERE (table_id='" + strTable + "') AND (order_date='" + strDate + "') AND (sttSO_id = '1') ";
+                String strTotal = "SELECT SUM(listO_amount*food_price) AS Total FROM data_listorder INNER JOIN data_order ON  data_listorder.listO_id = data_order.listO_id INNER JOIN data_foods ON  data_listorder.food_id = data_foods.food_id WHERE (table_id='" + strTable + "') AND (sttSO_id = '1') ";
                 Statement stmt = con.createStatement();
                 stmt.executeUpdate(strTotal);
                 TextView txtShowTotalPrice = (TextView) findViewById(R.id.txtShowTotal);
                 txtShowTotalPrice.setText(strTotal);
-//                Toast.makeText(getApplicationContext(),""+ strTotal +"", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(),""+ strTotal +"", Toast.LENGTH_SHORT).show();
                 z = "insert into successfull";
                 isSuccess = true;
             }

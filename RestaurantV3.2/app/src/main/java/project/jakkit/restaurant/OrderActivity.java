@@ -44,7 +44,7 @@ public class OrderActivity extends ActionBarActivity {
     private FoodTABLE objFoodTABLE;
     private ListView myListView;
     private TextView txtShowTable, txtShowOfficer;
-    private String strOfficer, strTable, strFood, strAmount, strHotLevel, strPrice, strNumFood, strUserID, strDate;
+    private String strOfficer, strTable, strFood, strAmount, strHotLevel, strPrice, strNumFood, strUserID, strDate, strHotname;
 
     private int intListO=1;
 
@@ -142,7 +142,7 @@ public class OrderActivity extends ActionBarActivity {
 
         AlertDialog.Builder objBuilder = new AlertDialog.Builder(this);
         objBuilder.setIcon(R.drawable.food_order);
-        objBuilder.setTitle("เลือกจำนวน");
+        objBuilder.setTitle("เลือกจำนวน" + "[" + strFood + "]");
         objBuilder.setCancelable(false);
         objBuilder.setSingleChoiceItems(charItem, -1, new DialogInterface.OnClickListener() {
             @Override
@@ -188,7 +188,7 @@ public class OrderActivity extends ActionBarActivity {
 
         AlertDialog.Builder objBuilder = new AlertDialog.Builder(this);
         objBuilder.setIcon(R.drawable.hot);
-        objBuilder.setTitle("เลือกระดับความเผ็ด");
+        objBuilder.setTitle("เลือกระดับความเผ็ด" + "[" + strFood + "]");
         objBuilder.setCancelable(false);
         objBuilder.setSingleChoiceItems(charItem, -1, new DialogInterface.OnClickListener() {
             @Override
@@ -197,12 +197,15 @@ public class OrderActivity extends ActionBarActivity {
                 switch (which) {
                     case 0:
                         strHotLevel = "1";
+                        strHotname = "เผ็ดน้อย";
                         break;
                     case 1:
                         strHotLevel = "2";
+                        strHotname = "เผ็ดปานกลาง";
                         break;
                     case 2:
                         strHotLevel = "3";
+                        strHotname = "เผ็ดมาก";
                         break;
                 }   // switch
 
@@ -222,7 +225,7 @@ public class OrderActivity extends ActionBarActivity {
         objBuilder.setIcon(R.drawable.restaurant2);
         objBuilder.setTitle("ตรวจสอบรายการที่สั่ง");
         objBuilder.setCancelable(false);
-        objBuilder.setMessage(strOfficer + "\n" + "โต๊ะ : "+ strTable+ "\n" + "อาหาร : "+ strFood +"\n" + "ราคา : "+ strPrice+ "\n" +"จำนวน : " + strAmount+ "\n" + "ระดับความเผ็ด : " + strHotLevel);
+        objBuilder.setMessage(strOfficer  +" "+ "โต๊ะ => "+ strTable +"\n"+ strFood +" "+ strHotname +" "+ strPrice +" บาท" +" " + strAmount + " จาน");
         objBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -251,8 +254,8 @@ public class OrderActivity extends ActionBarActivity {
                     z = "Please check internet connection";
                 } else {
 
-                    String query = "insert into data_listorder values('" + intListO + "','" + strNumFood + "','" + strAmount + "','" + strHotLevel + "')";
-                    String query2 = "insert into data_order values(NULL,'" + strTable + "','" + intListO + "','" + strDate + "','" + strUserID + "',' 1 ',' 1 ')";
+                    String query = "insert into data_listorder values('" + intListO + "','" + strNumFood + "','" + strHotLevel + "','" + strTable + "','" + strUserID + "','" + strDate + "')";
+                    String query2 = "insert into data_order values(NULL,'" + intListO + "','" + strAmount + "',' 1 ',' 1 ')";
 
                     Statement stmt = con.createStatement();
                     stmt.executeUpdate(query);

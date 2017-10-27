@@ -58,18 +58,18 @@
             android:layout_weight="0.56"
             android:background="#778899"
             android:text="สั่งอาหาร"
-            android:textColor="#53d081"
+            android:textColor="#ffffff"
             android:textSize="20sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:onClick="clickOrder"/>
 
         <Button
             android:id="@+id/btt_ListOrder"
             android:layout_width="128dp"
             android:layout_height="50dp"
             android:background="#778899"
-            android:onClick="clickListOrder"
             android:text="อาหารที่สั่ง"
-            android:textColor="#ffffff"
+            android:textColor="#53d081"
             android:textSize="20sp" />
         <Button
             android:id="@+id/btt_sendorder"
