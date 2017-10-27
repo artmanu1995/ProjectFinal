@@ -1,6 +1,7 @@
 package project.jakkit.restaurant;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.StrictMode;
@@ -9,6 +10,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -21,20 +23,24 @@ import org.json.JSONObject;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.text.SimpleDateFormat;
 
 /**
  * Created by AloneBOY on 13/09/2017.
  */
 
 public class ListCookOutActivity extends ActionBarActivity {
-    private String strTableID, strNameFood, strHotLevel, strAmount, strOpenID;
 
-    private ListView ListCookOut;
     private ShowOrderTABLE objShowOrderTABLE;
     private OrderTABLE objOrderTABLE;
     private ListOrderTABLE objListOrderTABLE;
     private FoodTABLE objFoodTABLE;
 
+    private TextView txtShowOfficer;
+    private ListView ListCookOut;
+
+    private String strTableID, strNameFood, strHotLevel, strAmount, strOpenID;
+    private String strOfficer, strUserID, strDate;
     private String strSttSendOK = "0", strDefaultSttPay = "1";
 
     ConnectionClass connectionClass;
@@ -53,8 +59,41 @@ public class ListCookOutActivity extends ActionBarActivity {
 
         bindWidget();
         synJSONListOrder();
+        showOfficer();
+        getOfficerID();
+        getDate();
+
         createListViewCook();
 
+    }
+    private void showOfficer() {
+        strOfficer = getIntent().getExtras().getString("Officer");
+        txtShowOfficer.setText(strOfficer);
+    }
+    private void getOfficerID() {
+        strUserID = getIntent().getExtras().getString("IDofficer");
+    }
+    private void getDate() {
+        Thread t = new Thread() {
+            @Override
+            public void run() {
+                try {
+                    while (!isInterrupted()) {
+                        Thread.sleep(1000);
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                long date = System.currentTimeMillis();
+                                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                                strDate = sdf.format(date);
+                            }
+                        });
+                    }
+                } catch (InterruptedException e) {
+                }
+            }
+        };
+        t.start();
     }
     public void synJSONListOrder() {
         if (Build.VERSION.SDK_INT > 9) {
@@ -110,19 +149,19 @@ public class ListCookOutActivity extends ActionBarActivity {
                 Log.d("sho", "SttPay ==> " + strSttPay);
                 Log.d("sho", "Amount ==> " + intAmount); */
 
-                    if (strSttSend.equals(strSttSendOK) && strSttPay.equals(strDefaultSttPay)) {
-                        try {
-                            String strSynFoodResult[] = objFoodTABLE.searchFood(strFoodID);
-                            strFoodID = strSynFoodResult[0];
-                            String strNameFood = strSynFoodResult[1];
+                if (strSttSend.equals(strSttSendOK) && strSttPay.equals(strDefaultSttPay)) {
+                    try {
+                        String strSynFoodResult[] = objFoodTABLE.searchFood(strFoodID);
+                        strFoodID = strSynFoodResult[0];
+                        String strNameFood = strSynFoodResult[1];
 
-                       // Log.d("how", "NameFood ==> " + strNameFood);
+                        // Log.d("how", "NameFood ==> " + strNameFood);
 
-                            long AddValue = objListOrderTABLE.addValueToListOrder(strOpenID, strTableID, strNameFood, strHotLevel, intAmount);
-                        } catch (Exception e) {
-                        }
+                        long AddValue = objListOrderTABLE.addValueToListOrder(strOpenID, strTableID, strNameFood, strHotLevel, intAmount);
+                    } catch (Exception e) {
                     }
                 }
+            }
         } catch (Exception e) {
             Log.d("oic", "Update ==> " + e.toString());
         }
@@ -152,5 +191,17 @@ public class ListCookOutActivity extends ActionBarActivity {
     }
     private void bindWidget() {
         ListCookOut = (ListView)findViewById(R.id.listCookOut);
+        txtShowOfficer= (TextView)findViewById(R.id.txtShowOfficer);
+    }
+    public void ClickC(View view) {
+        Intent intent = new Intent(ListCookOutActivity.this, ListCookActivity.class);
+        intent.putExtra("Officer", strOfficer);
+        intent.putExtra("IDofficer", strUserID);
+        startActivity(intent);
+    }
+    public void clicklogout(View view){
+        Intent intent = new Intent(ListCookOutActivity.this, MainActivity.class);
+        startActivity(intent);
     }
 }
+

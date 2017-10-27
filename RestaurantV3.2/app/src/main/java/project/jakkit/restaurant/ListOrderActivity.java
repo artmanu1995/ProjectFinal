@@ -44,9 +44,9 @@ public class ListOrderActivity extends ActionBarActivity {
     private OrderTABLE objOrderTABLE;
     private ListOrderTABLE objListOrderTABLE;
     private FoodTABLE objFoodTABLE;
-    private TextView txtShowTable, txtShowOfficer, txtShowTotal;
+    private TextView txtShowTable, txtShowOfficer;
     private String strTable, strFoodID, strNameFood, strHotLevel, strAmount, strPriceFood,
-            strOpenID,strDefaultSttSend = "1",strOfficer, strUserID, strDate;
+            strOpenID,strDefaultSttSend = "1",strOfficer, strUserID, strDate, strTotal;
     private Integer intTotal = 0, intPrice, intAmount;
 
     ConnectionClass connectionClass;
@@ -66,29 +66,21 @@ public class ListOrderActivity extends ActionBarActivity {
         progressDialog = new ProgressDialog(this);
 
         clearAllOrder();
-
         synJSONListOrder();
 
         bindWidget();
-
         showTable();
         showOfficer();
         getOfficerID();
         getDate();
-        showDate();
-
-//        setOrder();
-        /*SELECT SUM(	listO_amount*food_price) AS Total
-        FROM data_listorder
-        INNER JOIN data_order ON  data_listorder.listO_id = data_order.listO_id
-        INNER JOIN data_foods ON  data_listorder.food_id = data_foods.food_id
-        WHERE (table_id=1) AND (order_date='2017-09-13') AND (sttSO_id=1)*/
+        synJSONTotalPrice();
 
         createListView1();
     }
+
     private void bindWidget() {
         txtShowTable = (TextView) findViewById(R.id.txtShowTable);
-        txtShowTotal = (TextView) findViewById(R.id.txtShowTotal);
+//        txtShowTotalPrice = (TextView) findViewById(R.id.txtShowTotal);
         ListOrder = (ListView)findViewById(R.id.listOrder);
         txtShowOfficer = (TextView) findViewById(R.id.txtShowOfficer);
     }
@@ -102,30 +94,6 @@ public class ListOrderActivity extends ActionBarActivity {
     }
     private void getOfficerID() {
         strUserID = getIntent().getExtras().getString("IDofficer");
-    }
-    private void showDate() {
-        Thread t = new Thread() {
-            @Override
-            public void run() {
-                try {
-                    while (!isInterrupted()) {
-                        Thread.sleep(1000);
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                TextView time = (TextView) findViewById(R.id.txtShowDateTime);
-                                long date = System.currentTimeMillis();
-                                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                                String dateString = sdf.format(date);
-                                time.setText(dateString);
-                            }
-                        });
-                    }
-                } catch (InterruptedException e) {
-                }
-            }
-        };
-        t.start();
     }
     private void getDate() {
         Thread t = new Thread() {
@@ -287,13 +255,12 @@ public class ListOrderActivity extends ActionBarActivity {
                     String strFoodID = objJSONObject.getString("food_id");
                     String strAmount = objJSONObject.getString("listO_amount");
                     String strHotLevel = objJSONObject.getString("listO_hot");
-                    String strSttSend = objJSONObject.getString("sttSO_id");
                     Integer intAmount = Integer.parseInt(strAmount);
 
  //                   Log.d("table", "TablePage ==> " + strTable);
  //                  Log.d("table", "TableJSON ==> " + strTableID);
 
-                        if (strTableID.equals(strTable) && strSttSend.equals(strDefaultSttSend)) {
+                        if (strTableID.equals(strTable)){
                             try {
                                 String strSynFoodResult[] = objFoodTABLE.searchFood(strFoodID);
                                 strFoodID = strSynFoodResult[0];
@@ -309,7 +276,36 @@ public class ListOrderActivity extends ActionBarActivity {
                 Log.d("oic", "Update ==> " + e.toString());
             }
     }
-    private void checkLOG() {
+    private String synJSONTotalPrice() {
+        /*SELECT SUM(listO_amount*food_price) AS Total
+        FROM data_listorder
+        INNER JOIN data_order ON  data_listorder.listO_id = data_order.listO_id
+        INNER JOIN data_foods ON  data_listorder.food_id = data_foods.food_id
+        WHERE (table_id=1) AND (order_date='2017-09-13') AND (sttSO_id=1)*/
+        String z = "";
+        boolean isSuccess = false;
+
+        try {
+            Connection con = connectionClass.CONN();
+            if (con == null) {
+                z = "Please check internet connection";
+            } else {
+                String strTotal = "SELECT SUM(listO_amount*food_price) AS Total FROM data_listorder INNER JOIN data_order ON  data_listorder.listO_id = data_order.listO_id INNER JOIN data_foods ON  data_listorder.food_id = data_foods.food_id WHERE (table_id='" + strTable + "') AND (order_date='" + strDate + "') AND (sttSO_id = '1') ";
+                Statement stmt = con.createStatement();
+                stmt.executeUpdate(strTotal);
+                TextView txtShowTotalPrice = (TextView) findViewById(R.id.txtShowTotal);
+                txtShowTotalPrice.setText(strTotal);
+//                Toast.makeText(getApplicationContext(),""+ strTotal +"", Toast.LENGTH_SHORT).show();
+                z = "insert into successfull";
+                isSuccess = true;
+            }
+        } catch (Exception ex) {
+            isSuccess = false;
+            z = "Exceptions" + ex;
+        }
+        return z;
+    }
+   /* private void checkLOG() {
         Log.d("addshow", "FoodID ==> " + strFoodID);
         Log.d("addshow", "NameFood ==> " + strNameFood);
         Log.d("addshow", "Hot ==> " + strHotLevel);
@@ -317,9 +313,16 @@ public class ListOrderActivity extends ActionBarActivity {
         Log.d("addshow", "Price ==> " + intPrice);
         Log.d("addshow", "OpenID ==> " + strOpenID);
         Log.d("addshow", "Table ==> " + strTable);
-    }
+    }*/
     public void clickOrder(View view){
         Intent intent = new Intent(ListOrderActivity.this, OrderActivity.class);
+        intent.putExtra("Officer", strOfficer);
+        intent.putExtra("IDofficer", strUserID);
+        intent.putExtra("Table", strTable);
+        startActivity(intent);
+    }
+    public void clickListSendOrder(View view){
+        Intent intent = new Intent(ListOrderActivity.this, ListSendOrderActivity.class);
         intent.putExtra("Officer", strOfficer);
         intent.putExtra("IDofficer", strUserID);
         intent.putExtra("Table", strTable);

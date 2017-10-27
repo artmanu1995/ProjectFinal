@@ -16,6 +16,7 @@ public class MyOpenHelper extends SQLiteOpenHelper{
     private static final String CREATE_USER_TABLE = "create table userTABLE (_id text primary key, " + " User text, Password text, Name text);";
     private static final String CREATE_FOOD_TABLE = "create table foodTABLE (_id text primary key, "+" Food text, Price integer);";
     private static final String CREATE_TO_TABLE = "create table toTABLE (_id text primary key, "+" Status text)";
+    private static final String CREATE_STATUSTO_TABLE = "create table statustoTABLE (_id text primary key, "+" StatusOF text)";
     private static final String CREATE_ORDER_TABLE = "create table orderTABLE (_id text primary key, "+" TableID text, NameFood text, HotLevel text, Amount integer)";
     private static final String CREATE_LISTO_TABLE = "create table listoTABLE (_id text primary key, "+" TableID text, NameFood text, HotLevel text, Amount integer)";
     private static final String CREATE_SHOWO_TABLE = "create table showoTABLE (_id text primary key, "+" FoodID text, NameFood text, Hot text, Amount integer, Price integer)";
@@ -28,6 +29,7 @@ public class MyOpenHelper extends SQLiteOpenHelper{
         db.execSQL(CREATE_USER_TABLE);
         db.execSQL(CREATE_FOOD_TABLE);
         db.execSQL(CREATE_TO_TABLE);
+        db.execSQL(CREATE_STATUSTO_TABLE);
         db.execSQL(CREATE_ORDER_TABLE);
         db.execSQL(CREATE_LISTO_TABLE);
         db.execSQL(CREATE_SHOWO_TABLE);

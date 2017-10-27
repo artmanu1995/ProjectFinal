@@ -42,7 +42,7 @@
         </activity>
         <activity
             android:name="project.jakkit.restaurant.ListCookOutActivity"
-            android:label="RestaurantV3 -List Out Order" >
+            android:label="RestaurantV3 -List Send Order Cook" >
         </activity>
     </application>
 

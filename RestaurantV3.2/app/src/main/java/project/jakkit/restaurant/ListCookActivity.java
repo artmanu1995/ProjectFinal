@@ -31,18 +31,21 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.Statement;
+import java.text.SimpleDateFormat;
 
 /**
  * Created by KHAMMA on 07/09/2017.
  */
 
 public class ListCookActivity extends ActionBarActivity {
+    private TextView txtShowOfficer;
     private ListView ListCook;
     private ShowOrderTABLE objShowOrderTABLE;
     private OrderTABLE objOrderTABLE;
     private ListOrderTABLE objListOrderTABLE;
     private FoodTABLE objFoodTABLE;
     private String strSttSendOK = "0";
+    private String strOfficer, strUserID, strDate;
 
     private String strTableID , strFoodID, strNameFood, strHotLevel, strAmount, strPriceFood,strOpenID;
     private String strDefaultSttSend = "1";
@@ -67,11 +70,42 @@ public class ListCookActivity extends ActionBarActivity {
         bindWidget();
 
         synJSONListOrder();
+        showOfficer();
+        getOfficerID();
+        getDate();
 
         createListViewCook();
 
     }
-
+    private void showOfficer() {
+        strOfficer = getIntent().getExtras().getString("Officer");
+        txtShowOfficer.setText(strOfficer);
+    }
+    private void getOfficerID() {
+        strUserID = getIntent().getExtras().getString("IDofficer");
+    }
+    private void getDate() {
+        Thread t = new Thread() {
+            @Override
+            public void run() {
+                try {
+                    while (!isInterrupted()) {
+                        Thread.sleep(1000);
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                long date = System.currentTimeMillis();
+                                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                                strDate = sdf.format(date);
+                            }
+                        });
+                    }
+                } catch (InterruptedException e) {
+                }
+            }
+        };
+        t.start();
+    }
     private void synJSONListOrder() {
         if (Build.VERSION.SDK_INT > 9) {
             StrictMode.ThreadPolicy objPolicy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
@@ -112,7 +146,6 @@ public class ListCookActivity extends ActionBarActivity {
                 String strFoodID = objJSONObject.getString("food_id");
                 String strAmount = objJSONObject.getString("listO_amount");
                 String strHotLevel = objJSONObject.getString("listO_hot");
-                String strSttSend = objJSONObject.getString("sttSO_id");
                 Integer intAmount = Integer.parseInt(strAmount);
 
  /*               Log.d("addsh", "OpenTableID ==> " + strOpenID);
@@ -122,7 +155,6 @@ public class ListCookActivity extends ActionBarActivity {
                 Log.d("addsh", "SttSend ==> " + strSttSend);
                 Log.d("addsh", "Amount ==> " + intAmount); */
 
-                    if (strSttSend.equals(strDefaultSttSend)) {
                          try {
                              String strSynResult[] = objFoodTABLE.searchFood(strFoodID);
                              strFoodID = strSynResult[0];
@@ -134,8 +166,6 @@ public class ListCookActivity extends ActionBarActivity {
                         } catch (Exception e) {
                         }
                     }
-
-                }
             } catch (Exception e) {
             Log.d("oic", "Update ==> " + e.toString());
             }
@@ -218,11 +248,15 @@ public class ListCookActivity extends ActionBarActivity {
         return z;
     }
 
-    public void Click(View view) {
-        Button btn_go = (Button)findViewById(R.id.btt_cookOut);
+    public void ClickCO(View view) {
         Intent intent = new Intent(ListCookActivity.this, ListCookOutActivity.class);
+        intent.putExtra("Officer", strOfficer);
+        intent.putExtra("IDofficer", strUserID);
         startActivity(intent);
-
+    }
+    public void clicklogout(View view){
+        Intent intent = new Intent(ListCookActivity.this, MainActivity.class);
+        startActivity(intent);
     }
     protected void onPreExecute() {
         progressDialog.setMessage("Loading...");
@@ -230,6 +264,7 @@ public class ListCookActivity extends ActionBarActivity {
     }
     private void bindWidget() {
         ListCook = (ListView)findViewById(R.id.listOrderCook);
+        txtShowOfficer= (TextView)findViewById(R.id.txtShowOfficer);
     }
     private void clearAllOrder() {
         SQLiteDatabase objSqLiteDatabase = openOrCreateDatabase("restaurantV4.db", MODE_PRIVATE, null);

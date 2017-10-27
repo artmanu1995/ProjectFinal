@@ -7,40 +7,40 @@
 
     <LinearLayout
         android:id="@+id/linTop1"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="34dp"
+        android:layout_marginTop="5dp"
+        android:layout_weight="0.24"
+        android:gravity="left"
+        android:orientation="horizontal"
         android:paddingLeft="8dp"
         android:paddingRight="8dp"
-        android:orientation="horizontal"
-        android:layout_marginTop="5dp"
-        android:layout_weight="0.24">
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginRight="15dp"
+        android:layout_marginEnd="15dp">
 
         <TextView
             android:id="@+id/txtShowOfficer"
-            android:layout_width="0dp"
+            android:layout_width="200dp"
             android:layout_height="wrap_content"
-            android:layout_weight="2"
+            android:layout_weight="1.18"
+            android:gravity="right"
             android:text="New Text"
             android:textSize="16sp" />
+
         <Button
             android:id="@+id/btt_logout"
-            android:layout_width="15dp"
+            android:layout_width="80dp"
             android:layout_height="30dp"
             android:layout_weight="1"
             android:background="#FF0000"
+            android:gravity="center"
             android:onClick="clicklogout"
             android:text="Logout"
             android:textColor="#ffffff"
             android:textSize="16sp" />
-        <TextView
-            android:id="@+id/txtShowDateTime"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="3"
-            android:gravity="right"
-            android:text="TextView"
-            android:textSize="14sp"
-            android:textStyle="italic" />
     </LinearLayout>
     <LinearLayout
         android:orientation="horizontal"
@@ -48,29 +48,39 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:weightSum="1"
-        android:layout_marginTop="5dp"
+        android:layout_marginTop="8dp"
         android:layout_below="@+id/linTop1">
 
         <Button
             android:id="@+id/btt_order"
             android:layout_width="wrap_content"
             android:layout_height="50dp"
-            android:layout_weight="1.02"
-            android:background="#ffb400"
+            android:layout_weight="0.56"
+            android:background="#778899"
             android:text="สั่งอาหาร"
-            android:textColor="#ffffff"
-            android:textSize="25sp"
-            android:onClick="clickOrder"/>
+            android:textColor="#53d081"
+            android:textSize="20sp"
+            android:textStyle="bold" />
 
         <Button
-            android:id="@+id/btt_cook"
-            android:layout_width="186dp"
+            android:id="@+id/btt_ListOrder"
+            android:layout_width="128dp"
             android:layout_height="50dp"
-            android:background="#ffb400"
+            android:background="#778899"
+            android:onClick="clickListOrder"
             android:text="อาหารที่สั่ง"
-            android:textColor="#53d081"
-            android:textSize="25sp"
-            android:textStyle="bold" />
+            android:textColor="#ffffff"
+            android:textSize="20sp" />
+        <Button
+            android:id="@+id/btt_sendorder"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:background="#778899"
+            android:onClick="clickListSendOrder"
+            android:text="Order ที่ออก"
+            android:textColor="#ffffff"
+            android:textSize="20sp"
+            android:layout_weight="0.53" />
     </LinearLayout>
     <LinearLayout
         android:id="@+id/linDate"
@@ -162,10 +172,11 @@
     <ListView
         android:id="@+id/listOrder"
         android:layout_width="wrap_content"
-        android:layout_height="270dp"
+        android:layout_height="200dp"
         android:layout_below="@+id/linTitle"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="5dp"/>
 
     <TextView
         android:id="@+id/txtSPrice"
@@ -180,19 +191,23 @@
         android:layout_marginEnd="13dp"
         android:layout_below="@+id/listOrder"
         android:layout_toLeftOf="@+id/txtShowTotal"
-        android:layout_toStartOf="@+id/txtShowTotal" />
+        android:layout_toStartOf="@+id/txtShowTotal"
+        android:layout_marginTop="10dp" />
     <TextView
         android:id="@+id/txtShowTotal"
         android:layout_width="wrap_content"
         android:layout_height="36dp"
         android:layout_weight="3"
         android:gravity="center_vertical|center_horizontal"
-        android:text="Total"
-        android:textSize="25sp"
+        android:text="New Text"
+        android:textColor="#FF0000"
+        android:textSize="30sp"
         android:textStyle="bold"
-        android:textColor="#FF6347"
         android:layout_below="@+id/listOrder"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignRight="@+id/linTop1"
+        android:layout_alignEnd="@+id/linTop1"
+        android:layout_marginRight="19dp"
+        android:layout_marginEnd="19dp"
+        android:layout_marginTop="10dp" />
 
 </RelativeLayout>

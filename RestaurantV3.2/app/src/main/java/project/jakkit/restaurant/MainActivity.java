@@ -161,6 +161,7 @@ public class MainActivity extends ActionBarActivity {
         objSqLiteDatabase.delete("orderTABLE", null, null);
         objSqLiteDatabase.delete("listoTABLE",null, null);
         objSqLiteDatabase.delete("showoTABLE",null, null);
+        objSqLiteDatabase.delete("statustoTABLE", null, null);
     }
 
     private void synJSONtoSQLite() {

@@ -66,7 +66,6 @@ public class OrderActivity extends ActionBarActivity {
         showOfficer();
         getOfficerID();
         getDate();
-        showDate();
 
         //Synchronize JSON to SQLite
         synJSONtoSQLite();
@@ -92,30 +91,6 @@ public class OrderActivity extends ActionBarActivity {
     }
     private void getOfficerID() {
         strUserID = getIntent().getExtras().getString("IDofficer");
-    }
-    private void showDate() {
-        Thread t = new Thread() {
-            @Override
-            public void run() {
-                try {
-                    while (!isInterrupted()) {
-                        Thread.sleep(1000);
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                TextView time = (TextView) findViewById(R.id.txtShowDateTime);
-                                long date = System.currentTimeMillis();
-                                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                                String dateString = sdf.format(date);
-                                time.setText(dateString);
-                            }
-                        });
-                    }
-                } catch (InterruptedException e) {
-                }
-            }
-        };
-        t.start();
     }
     private void getDate() {
         Thread t = new Thread() {
@@ -408,6 +383,13 @@ public class OrderActivity extends ActionBarActivity {
     }
     public void clickListOrder(View view){
         Intent intent = new Intent(OrderActivity.this, ListOrderActivity.class);
+        intent.putExtra("Officer", strOfficer);
+        intent.putExtra("IDofficer", strUserID);
+        intent.putExtra("Table", strTable);
+        startActivity(intent);
+    }
+    public void clickListSendOrder(View view){
+        Intent intent = new Intent(OrderActivity.this, ListSendOrderActivity.class);
         intent.putExtra("Officer", strOfficer);
         intent.putExtra("IDofficer", strUserID);
         intent.putExtra("Table", strTable);
