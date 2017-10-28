@@ -259,32 +259,29 @@ public class ListOrderActivity extends ActionBarActivity {
                     String strHotName;
 
                     if (strHotLevel.equals("1")){
-                        strHotName = "เผ็ดน้อย";
+                        strHotName = "น้อย";
                     }else if (strHotLevel.equals("2")){
-                        strHotName = "เผ็ดปานกลาง";
+                        strHotName = "ปานกลาง";
                     }else {
-                        strHotName = "เผ็ดมาก";
+                        strHotName = "มาก";
                     }
 
  //                   Log.d("table", "TablePage ==> " + strTable);
  //                  Log.d("table", "TableJSON ==> " + strTableID);
                     if (strTableID.equals(strTable)){
-                            try {
-                                String strSynFoodResult[] = objFoodTABLE.searchFood(strFoodID);
-                                strFoodID = strSynFoodResult[0];
-                                String strNameFood = strSynFoodResult[1];
-                                String strPriceFood = strSynFoodResult[2];
-                                Integer intPrice = Integer.parseInt(strPriceFood);
-                                long AddValue = objShowOrderTABLE.addValueToShowOrder(strOpenID, strFoodID, strNameFood, strHotName, intAmount, intPrice);
-                            } catch (Exception e) {
-                            }
+                        String strSynFoodResult[] = objFoodTABLE.searchFood(strFoodID);
+                        strFoodID = strSynFoodResult[0];
+                        String strNameFood = strSynFoodResult[1];
+                        String strPriceFood = strSynFoodResult[2];
+                        Integer intPrice = Integer.parseInt(strPriceFood);
+                        long AddValue = objShowOrderTABLE.addValueToShowOrder(strOpenID, strFoodID, strNameFood, strHotName, intAmount, intPrice);
                     }
                 }
             } catch (Exception e) {
                 Log.d("oic", "Update ==> " + e.toString());
             }
     }
-    private String synJSONTotalPrice() {
+    public String synJSONTotalPrice() {
         /*SELECT SUM(listO_amount*food_price) AS Total
         FROM data_listorder
         INNER JOIN data_order ON  data_listorder.listO_id = data_order.listO_id

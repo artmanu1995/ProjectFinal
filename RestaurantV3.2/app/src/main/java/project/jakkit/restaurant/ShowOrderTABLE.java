@@ -28,6 +28,33 @@ public class ShowOrderTABLE {
         readDatabase = objMyOpenHelper.getReadableDatabase();
     }   // Constructor
 
+    public String[] searchOrder(String strFoodID) {
+        try {
+            String strResult[] = null;
+            Cursor objCursor = readDatabase.query(TABLE_SHOWO,
+                    new String[] {COLUMN_FOODID, COLUMN_HOT, COLUMN_AMOUNT, COLUMN_ID_SFOODID},
+                    COLUMN_FOODID + "=?",
+                    new String[] {String.valueOf(strFoodID)},
+                    null, null, null, null);
+
+            if (objCursor != null) {
+                if (objCursor.moveToFirst()) {
+
+                    strResult = new String[objCursor.getColumnCount()];
+                    strResult[0] = objCursor.getString(0);
+                    strResult[1] = objCursor.getString(1);
+                    strResult[2] = objCursor.getString(2);
+                    strResult[3] = objCursor.getString(3);
+                }
+            }
+            objCursor.close();
+            return strResult;
+        } catch (Exception e) {
+            return null;
+        }
+        //return new String[0];
+    }
+
     public String[] readAllShowOpenID() {
 
         String strListOpenID[] = null;

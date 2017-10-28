@@ -155,17 +155,12 @@ public class ListCookActivity extends ActionBarActivity {
                 Log.d("addsh", "SttSend ==> " + strSttSend);
                 Log.d("addsh", "Amount ==> " + intAmount); */
 
-                         try {
-                             String strSynResult[] = objFoodTABLE.searchFood(strFoodID);
-                             strFoodID = strSynResult[0];
-                             String strNameFood = strSynResult[1];
+                    String strSynResult[] = objFoodTABLE.searchFood(strFoodID);
+                    strFoodID = strSynResult[0];
+                    String strNameFood = strSynResult[1];
 
-                 //       Log.d("addshow", "NameFood ==> " + strNameFood);
-
-                            long AddValue = objOrderTABLE.addValueToOrder(strOpenID, strTableID, strNameFood, strHotLevel, intAmount);
-                        } catch (Exception e) {
-                        }
-                    }
+                    long AddValue = objOrderTABLE.addValueToOrder(strOpenID, strTableID, strNameFood, strHotLevel, intAmount);
+                }
             } catch (Exception e) {
             Log.d("oic", "Update ==> " + e.toString());
             }

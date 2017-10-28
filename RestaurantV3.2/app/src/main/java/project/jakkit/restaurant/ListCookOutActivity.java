@@ -150,16 +150,11 @@ public class ListCookOutActivity extends ActionBarActivity {
                 Log.d("sho", "Amount ==> " + intAmount); */
 
                 if (strSttSend.equals(strSttSendOK) && strSttPay.equals(strDefaultSttPay)) {
-                    try {
-                        String strSynFoodResult[] = objFoodTABLE.searchFood(strFoodID);
-                        strFoodID = strSynFoodResult[0];
-                        String strNameFood = strSynFoodResult[1];
+                    String strSynFoodResult[] = objFoodTABLE.searchFood(strFoodID);
+                    strFoodID = strSynFoodResult[0];
+                    String strNameFood = strSynFoodResult[1];
 
-                        // Log.d("how", "NameFood ==> " + strNameFood);
-
-                        long AddValue = objListOrderTABLE.addValueToListOrder(strOpenID, strTableID, strNameFood, strHotLevel, intAmount);
-                    } catch (Exception e) {
-                    }
+                    long AddValue = objListOrderTABLE.addValueToListOrder(strOpenID, strTableID, strNameFood, strHotLevel, intAmount);
                 }
             }
         } catch (Exception e) {
