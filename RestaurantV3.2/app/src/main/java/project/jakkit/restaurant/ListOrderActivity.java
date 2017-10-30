@@ -41,13 +41,10 @@ public class ListOrderActivity extends ActionBarActivity {
     private ListView ListOrder;
 
     private ShowOrderTABLE objShowOrderTABLE;
-    private OrderTABLE objOrderTABLE;
-    private ListOrderTABLE objListOrderTABLE;
     private FoodTABLE objFoodTABLE;
     private TextView txtShowTable, txtShowOfficer;
     private String strTable, strFoodID, strNameFood, strHotLevel, strAmount, strPriceFood,
             strOpenID,strDefaultSttSend = "1",strOfficer, strUserID, strDate, strTotal;
-    private Integer intTotal = 0, intPrice, intAmount;
 
     ConnectionClass connectionClass;
     ProgressDialog progressDialog;
@@ -59,8 +56,6 @@ public class ListOrderActivity extends ActionBarActivity {
 
         objShowOrderTABLE = new ShowOrderTABLE(this);
         objFoodTABLE = new FoodTABLE(this);
-        objOrderTABLE = new OrderTABLE(this);
-        objListOrderTABLE = new ListOrderTABLE(this);
 
         connectionClass = new ConnectionClass();
         progressDialog = new ProgressDialog(this);
@@ -73,14 +68,13 @@ public class ListOrderActivity extends ActionBarActivity {
         showOfficer();
         getOfficerID();
         getDate();
-        synJSONTotalPrice();
-
         createListView1();
+
+        synJSONTotalPrice();
     }
 
     private void bindWidget() {
         txtShowTable = (TextView) findViewById(R.id.txtShowTable);
-//        txtShowTotalPrice = (TextView) findViewById(R.id.txtShowTotal);
         ListOrder = (ListView)findViewById(R.id.listOrder);
         txtShowOfficer = (TextView) findViewById(R.id.txtShowOfficer);
     }
@@ -131,7 +125,7 @@ public class ListOrderActivity extends ActionBarActivity {
         final String[] strListPrice = objShowOrderTABLE.readAllShowPrice();
 
 
-        AdapterListOrder1 objMyAdapter = new AdapterListOrder1(ListOrderActivity.this,strListOpenID,strListFoodID,strListFood,strListHot,strListAmount,strListPrice );
+        AdapterListOrder objMyAdapter = new AdapterListOrder(ListOrderActivity.this,strListOpenID,strListFoodID,strListFood,strListHot,strListAmount,strListPrice );
         ListOrder.setAdapter(objMyAdapter);
 
         //Click Active
@@ -150,7 +144,6 @@ public class ListOrderActivity extends ActionBarActivity {
         });
     }
     private void deleteOrder() {
-
         AlertDialog.Builder objBuilder = new AlertDialog.Builder(this);
         objBuilder.setIcon(R.drawable.danger);
         objBuilder.setTitle("ยกเลิก Order");
@@ -160,7 +153,6 @@ public class ListOrderActivity extends ActionBarActivity {
             public void onClick(DialogInterface dialog, int which) {
                 onPreExecute();
  //               deleteOrderToMySQL();
-
                 dialog.dismiss();
             }
         });
@@ -197,7 +189,6 @@ public class ListOrderActivity extends ActionBarActivity {
         }
         return z;
     }
-
     protected void onPreExecute() {
         progressDialog.setMessage("Loading...");
         progressDialog.show();
@@ -210,13 +201,11 @@ public class ListOrderActivity extends ActionBarActivity {
                     int aInt = 1;
                     String aString = Integer.toString(aInt);
     */
-
     public void synJSONListOrder() {
             if (Build.VERSION.SDK_INT > 9) {
                 StrictMode.ThreadPolicy objPolicy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
                 StrictMode.setThreadPolicy(objPolicy);
             }
-
             strTable = getIntent().getExtras().getString("Table");
             //Create InputStream
             InputStream objInputStream = null;
@@ -230,8 +219,7 @@ public class ListOrderActivity extends ActionBarActivity {
 
             } catch (Exception e) {
                 Log.d("oic", "InputStream ==> " + e.toString());
-            }
-            //Create strJSON
+            }//Create strJSON
             try {
                 BufferedReader objBufferedReader = new BufferedReader(new InputStreamReader(objInputStream, "UTF-8"));
                 StringBuilder objStringBuilder = new StringBuilder();
@@ -244,8 +232,7 @@ public class ListOrderActivity extends ActionBarActivity {
                 strJSON = objStringBuilder.toString();
             } catch (Exception e) {
                 Log.d("oic", "strJSON ==> " + e.toString());
-            }
-            //UpData SQLite
+            }//UpData SQLite
             try {
                 final JSONArray objJsonArray = new JSONArray(strJSON);
                 for (int i = 0; i < objJsonArray.length(); i++) {
@@ -265,9 +252,8 @@ public class ListOrderActivity extends ActionBarActivity {
                     }else {
                         strHotName = "มาก";
                     }
-
- //                   Log.d("table", "TablePage ==> " + strTable);
- //                  Log.d("table", "TableJSON ==> " + strTableID);
+ //                     Log.d("table", "TablePage ==> " + strTable);
+ //                     Log.d("table", "TableJSON ==> " + strTableID);
                     if (strTableID.equals(strTable)){
                         String strSynFoodResult[] = objFoodTABLE.searchFood(strFoodID);
                         strFoodID = strSynFoodResult[0];
@@ -281,44 +267,54 @@ public class ListOrderActivity extends ActionBarActivity {
                 Log.d("oic", "Update ==> " + e.toString());
             }
     }
-    public String synJSONTotalPrice() {
-        /*SELECT SUM(listO_amount*food_price) AS Total
-        FROM data_listorder
-        INNER JOIN data_order ON  data_listorder.listO_id = data_order.listO_id
-        INNER JOIN data_foods ON  data_listorder.food_id = data_foods.food_id
-        WHERE (table_id=1) AND (order_date='2017-09-13') AND (sttSO_id=1)*/
-        String z = "";
-        boolean isSuccess = false;
-
-        try {
-            Connection con = connectionClass.CONN();
-            if (con == null) {
-                z = "Please check internet connection";
-            } else {
-                String strTotal = "SELECT SUM(listO_amount*food_price) AS Total FROM data_listorder INNER JOIN data_order ON  data_listorder.listO_id = data_order.listO_id INNER JOIN data_foods ON  data_listorder.food_id = data_foods.food_id WHERE (table_id='" + strTable + "') AND (sttSO_id = '1') ";
-                Statement stmt = con.createStatement();
-                stmt.executeUpdate(strTotal);
-                TextView txtShowTotalPrice = (TextView) findViewById(R.id.txtShowTotal);
-                txtShowTotalPrice.setText(strTotal);
-                    Toast.makeText(getApplicationContext(),""+ strTotal +"", Toast.LENGTH_SHORT).show();
-                z = "insert into successfull";
-                isSuccess = true;
-            }
-        } catch (Exception ex) {
-            isSuccess = false;
-            z = "Exceptions" + ex;
+    private void synJSONTotalPrice() {
+        if (Build.VERSION.SDK_INT > 9) {
+            StrictMode.ThreadPolicy objPolicy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+            StrictMode.setThreadPolicy(objPolicy);
         }
-        return z;
+        strTable = getIntent().getExtras().getString("Table");
+        //Create InputStream
+        InputStream objInputStream = null;
+        String strJSON = "";
+        try {
+            HttpClient objHttpClient = new DefaultHttpClient();
+            HttpPost objHttpPost = new HttpPost("http://192.168.1.90/join_sum_total.php");
+            HttpResponse objHttpResponse = objHttpClient.execute(objHttpPost);
+            HttpEntity objHttpEntity = objHttpResponse.getEntity();
+            objInputStream = objHttpEntity.getContent();
+
+        } catch (Exception e) {
+            Log.d("oic", "InputStream ==> " + e.toString());
+        }
+        //Create strJSON
+        try {
+            BufferedReader objBufferedReader = new BufferedReader(new InputStreamReader(objInputStream, "UTF-8"));
+            StringBuilder objStringBuilder = new StringBuilder();
+            String strLine = null;
+
+            while ((strLine = objBufferedReader.readLine()) != null) {
+                objStringBuilder.append(strLine);
+            }   // while
+            objInputStream.close();
+            strJSON = objStringBuilder.toString();
+        } catch (Exception e) {
+            Log.d("oic", "strJSON ==> " + e.toString());
+        }//UpData SQLite
+        try {
+            final JSONArray objJsonArray = new JSONArray(strJSON);
+            for (int i = 0; i < objJsonArray.length(); i++) {
+                JSONObject objJSONObject = objJsonArray.getJSONObject(i);
+                String strTableID = objJSONObject.getString("table_id");
+                String strTotal = objJSONObject.getString("total");
+                if (strTableID.equals(strTable)){
+                    TextView total = (TextView) findViewById(R.id.txtShowTotal);
+                    total.setText(strTotal);
+                }
+            }
+        } catch (Exception e) {
+            Log.d("oic", "Update ==> " + e.toString());
+        }
     }
-   /* private void checkLOG() {
-        Log.d("addshow", "FoodID ==> " + strFoodID);
-        Log.d("addshow", "NameFood ==> " + strNameFood);
-        Log.d("addshow", "Hot ==> " + strHotLevel);
-        Log.d("addshow", "Amount ==> " + intAmount);
-        Log.d("addshow", "Price ==> " + intPrice);
-        Log.d("addshow", "OpenID ==> " + strOpenID);
-        Log.d("addshow", "Table ==> " + strTable);
-    }*/
     public void clickOrder(View view){
         Intent intent = new Intent(ListOrderActivity.this, OrderActivity.class);
         intent.putExtra("Officer", strOfficer);
@@ -327,6 +323,13 @@ public class ListOrderActivity extends ActionBarActivity {
         startActivity(intent);
     }
     public void clickListSendOrder(View view){
+        Intent intent = new Intent(ListOrderActivity.this, ListConfirmSendOrderActivity.class);
+        intent.putExtra("Officer", strOfficer);
+        intent.putExtra("IDofficer", strUserID);
+        intent.putExtra("Table", strTable);
+        startActivity(intent);
+    }
+    public void clickListConSendOrder(View view){
         Intent intent = new Intent(ListOrderActivity.this, ListSendOrderActivity.class);
         intent.putExtra("Officer", strOfficer);
         intent.putExtra("IDofficer", strUserID);
@@ -334,7 +337,34 @@ public class ListOrderActivity extends ActionBarActivity {
         startActivity(intent);
     }
     public void clicklogout(View view){
-        Intent intent = new Intent(ListOrderActivity.this, MainActivity.class);
+        AlertDialog.Builder objBuilder = new AlertDialog.Builder(this);
+        objBuilder.setIcon(R.drawable.danger);
+        objBuilder.setTitle("คำเตือน !");
+        objBuilder.setMessage("[" + strOfficer + "] คุณต้องการออกจากระบบร้านอาหาร");
+        objBuilder.setCancelable(false);
+        objBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Intent objIntent = new Intent(ListOrderActivity.this, MainActivity.class);
+                startActivity(objIntent);
+                dialog.dismiss();
+
+                finish();
+            }
+        });
+        objBuilder.setNegativeButton("Cancle", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+                dialog.dismiss();
+            }
+        });
+        objBuilder.show();
+    }
+    public void clickhome(View view){
+        Intent intent = new Intent(ListOrderActivity.this, IndexMain.class);
+        intent.putExtra("Officer", strOfficer);
+        intent.putExtra("IDofficer", strUserID);
         startActivity(intent);
     }
 }

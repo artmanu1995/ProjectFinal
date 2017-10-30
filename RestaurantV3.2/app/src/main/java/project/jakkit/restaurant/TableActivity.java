@@ -43,7 +43,7 @@ public class TableActivity extends ActionBarActivity {
 
     private TextView txtShowOfficer;
     private String strOfficer, strTable, strUserID;
-    private String stt_lock = "0", stt_Unlock = "1",stt_blank = "0", stt_noblank = "1", stt_table, stt_OFtable;
+    private String stt_lock = "0", stt_Unlock = "1",stt_blank = "0", stt_noblank = "1", stt_table, stt_OFtable, strCheckOrderOffTable="0";
 
     ConnectionClass connectionClass;
 
@@ -461,7 +461,7 @@ public class TableActivity extends ActionBarActivity {
                         break;
                     case 1:
                         stt_table = "0";
-                        upDataTableToMySQL();
+                        synJSONgetListOrder();
                         break;
                 }   // switch
                 dialog.dismiss();
@@ -476,7 +476,121 @@ public class TableActivity extends ActionBarActivity {
         AlertDialog objAlertDialog = objBuilder.create();
         objAlertDialog.show();
     }
+    private void synJSONgetListOrder() {
+        //Setup New Policy
+        if (Build.VERSION.SDK_INT > 9) {
+            StrictMode.ThreadPolicy objPolicy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+            StrictMode.setThreadPolicy(objPolicy);
+        }//Create InputStream
+        InputStream objInputStream = null;
+        String strJSON = "";
+        try {
 
+            HttpClient objHttpClient = new DefaultHttpClient();
+            HttpPost objHttpPost = new HttpPost("http://192.168.1.90/count_list_order.php");
+            HttpResponse objHttpResponse = objHttpClient.execute(objHttpPost);
+            HttpEntity objHttpEntity = objHttpResponse.getEntity();
+            objInputStream = objHttpEntity.getContent();
+
+        } catch (Exception e) {
+            Log.d("oic", "InputStream ==> " + e.toString());
+        }
+        //Create strJSON
+        try {
+            BufferedReader objBufferedReader = new BufferedReader(new InputStreamReader(objInputStream, "UTF-8"));
+            StringBuilder objStringBuilder = new StringBuilder();
+            String strLine = null;
+            while ((strLine = objBufferedReader.readLine()) != null) {
+                objStringBuilder.append(strLine);
+            }   // while
+            objInputStream.close();
+            strJSON = objStringBuilder.toString();
+
+        } catch (Exception e) {
+            Log.d("oic", "strJSON ==> " + e.toString());
+        }
+        //UpData SQLite
+        try {
+            final JSONArray objJsonArray = new JSONArray(strJSON);
+            for (int j = 0; j < objJsonArray.length(); j++) {
+                JSONObject objJSONObject = objJsonArray.getJSONObject(j);
+                String strListOrder = objJSONObject.getString("COUNT(*)");
+                if (strCheckOrderOffTable.equals(strListOrder)){
+                    upDataTableToMySQL();
+                    Intent intento = new Intent(TableActivity.this, IndexMain.class);
+                    intento.putExtra("Officer", strOfficer);
+                    intento.putExtra("Table", strTable);
+                    intento.putExtra("IDofficer", strUserID);
+                    startActivity(intento);
+                    break;
+                }else{
+                    checkOrderOffTable();
+                    break;
+                }
+
+            }
+        } catch (Exception e) {
+            Log.d("oic", "Update ==> " + e.toString());
+        }
+    }
+    private void checkOrderOffTable() {
+        if (Build.VERSION.SDK_INT > 9) {
+            StrictMode.ThreadPolicy objPolicy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+            StrictMode.setThreadPolicy(objPolicy);
+        }//Create InputStream
+        InputStream objInputStream = null;
+        String strJSON = "";
+        try {
+
+            HttpClient objHttpClient = new DefaultHttpClient();
+            HttpPost objHttpPost = new HttpPost("http://192.168.1.90/count_listorder_table.php");
+            HttpResponse objHttpResponse = objHttpClient.execute(objHttpPost);
+            HttpEntity objHttpEntity = objHttpResponse.getEntity();
+            objInputStream = objHttpEntity.getContent();
+
+        } catch (Exception e) {
+            Log.d("oic", "InputStream ==> " + e.toString());
+        }//Create strJSON
+        try {
+            BufferedReader objBufferedReader = new BufferedReader(new InputStreamReader(objInputStream, "UTF-8"));
+            StringBuilder objStringBuilder = new StringBuilder();
+            String strLine = null;
+            while ((strLine = objBufferedReader.readLine()) != null) {
+                objStringBuilder.append(strLine);
+            }   // while
+            objInputStream.close();
+            strJSON = objStringBuilder.toString();
+
+        } catch (Exception e) {
+            Log.d("oic", "strJSON ==> " + e.toString());
+        }//UpData SQLite
+        try {
+            final JSONArray objJsonArray = new JSONArray(strJSON);
+            String strcheckOrderOffTable="0";
+            for (int j = 0; j < objJsonArray.length(); j++) {
+                JSONObject objJSONObject = objJsonArray.getJSONObject(j);
+                String strTableID = objJSONObject.getString("table_id");
+                String strCountOrder = objJSONObject.getString("count");
+
+                if (strTable.equals(strTableID)){
+                    MyAlertDialog objMyAlertDialog = new MyAlertDialog();
+                    objMyAlertDialog.myDialog(TableActivity.this, "คำเตือน !", "โต๊ะ [" + strTable + "] ยังมี Order ที่รอทำรายการอยู่");
+                    strcheckOrderOffTable="1";
+                    break;
+                }
+            }
+            if (strcheckOrderOffTable.equals("0")){
+                upDataTableToMySQL();
+                Intent intento = new Intent(TableActivity.this, IndexMain.class);
+                intento.putExtra("Officer", strOfficer);
+                intento.putExtra("Table", strTable);
+                intento.putExtra("IDofficer", strUserID);
+                startActivity(intento);
+            }
+        } catch (Exception e) {
+            Log.d("oic", "Update ==> " + e.toString());
+        }
+    }
     public String upDataTableToMySQL() {
         String z = "";
         boolean isSuccess = false;
@@ -486,7 +600,7 @@ public class TableActivity extends ActionBarActivity {
             if (con == null) {
                 z = "Please check internet connection";
             } else {
-                String query = "UPDATE data_onofftable SET sttOFTable_id = '" + stt_table + "' WHERE table_id = '" + strTable + "'";
+                String query = "UPDATE data_onofftable SET sttOFT_id = '" + stt_table + "' WHERE table_id = '" + strTable + "'";
 
                 Statement stmt = con.createStatement();
                 stmt.executeUpdate(query);
@@ -763,8 +877,29 @@ public class TableActivity extends ActionBarActivity {
         }
     }
     public void clicklogout(View view){
-        Intent intent = new Intent(TableActivity.this, MainActivity.class);
-        startActivity(intent);
+        AlertDialog.Builder objBuilder = new AlertDialog.Builder(this);
+        objBuilder.setIcon(R.drawable.danger);
+        objBuilder.setTitle("คำเตือน !");
+        objBuilder.setMessage("[" + strOfficer + "] คุณต้องการออกจากระบบร้านอาหาร");
+        objBuilder.setCancelable(false);
+        objBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Intent objIntent = new Intent(TableActivity.this, MainActivity.class);
+                startActivity(objIntent);
+                dialog.dismiss();
+
+                finish();
+            }
+        });
+        objBuilder.setNegativeButton("Cancle", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+                dialog.dismiss();
+            }
+        });
+        objBuilder.show();
     }
 
     private void synJSONstatusTable() {
@@ -827,8 +962,7 @@ public class TableActivity extends ActionBarActivity {
         if (Build.VERSION.SDK_INT > 9) {
             StrictMode.ThreadPolicy objPolicy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
             StrictMode.setThreadPolicy(objPolicy);
-        }
-        //Create InputStream
+        }//Create InputStream
         InputStream objInputStream = null;
         String strJSON = "";
         try {
@@ -858,8 +992,7 @@ public class TableActivity extends ActionBarActivity {
 
         } catch (Exception e) {
             Log.d("oic", "strJSON ==> " + e.toString());
-        }
-        //UpData SQLite
+        }//UpData SQLite
         try {
 
             final JSONArray objJsonArray = new JSONArray(strJSON);
@@ -868,7 +1001,7 @@ public class TableActivity extends ActionBarActivity {
                 JSONObject objJSONObject = objJsonArray.getJSONObject(i);
 
                 String strTableId = objJSONObject.getString("table_id");
-                String strStatusOF = objJSONObject.getString("sttOFTable_id");
+                String strStatusOF = objJSONObject.getString("sttOFT_id");
 
                 long addValue = objStatusTableTABLE.addValueStatusToTable(strTableId, strStatusOF);
             }   // for

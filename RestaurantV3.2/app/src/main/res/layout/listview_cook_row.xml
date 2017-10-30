@@ -6,7 +6,7 @@
     <LinearLayout
         android:id="@+id/linList"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="35dp"
         android:gravity="center_vertical"
         android:orientation="horizontal"
         android:weightSum="1"
@@ -14,37 +14,37 @@
         android:layout_alignParentStart="true">
 
         <TextView
-            android:id="@+id/txtShowTableIDO"
+            android:id="@+id/txtShowTableID"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center_vertical|center_horizontal"
             android:text="TableID"
             android:textSize="18sp"
-            android:layout_weight="0.25" />
+            android:layout_weight="0.30" />
 
         <TextView
-            android:id="@+id/txtShowFoodNameO"
+            android:id="@+id/txtShowFoodName"
             android:layout_width="20dp"
             android:layout_height="wrap_content"
-            android:layout_weight="0.37"
+            android:layout_weight="0.36"
             android:gravity="left|center_vertical|center_horizontal"
             android:text="ชื่ออาหาร"
             android:textSize="18sp" />
 
         <TextView
-            android:id="@+id/txtShowHotO"
+            android:id="@+id/txtShowHot"
             android:layout_width="60dp"
             android:layout_height="wrap_content"
-            android:layout_weight="0.14"
+            android:layout_weight="0.17"
             android:gravity="center_vertical|center_horizontal"
             android:text="ความเผ็ด"
             android:textSize="18sp" />
 
         <TextView
-            android:id="@+id/txtShowAmountO"
+            android:id="@+id/txtShowAmount"
             android:layout_width="40dp"
             android:layout_height="wrap_content"
-            android:layout_weight="0.25"
+            android:layout_weight="0.14"
             android:gravity="center_vertical|center_horizontal"
             android:text="จำนวน"
             android:textSize="18sp" />

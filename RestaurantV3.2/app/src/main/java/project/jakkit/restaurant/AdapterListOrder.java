@@ -11,12 +11,12 @@ import android.widget.TextView;
  * Created by KHAMMA on 11/09/2017.
  */
 
-public class AdapterListOrder1 extends BaseAdapter{
+public class AdapterListOrder extends BaseAdapter{
 
     private Context objContext;
     private String[] strFoodID, strNameFood, strHotLevel, strAmount, strPriceFood, strOpenID;
 
-    public AdapterListOrder1(Context objContext, String[] strOpenID, String[] strFoodID, String[] strNameFood, String[] strHotLevel, String[] strAmount, String[] strPriceFood){
+    public AdapterListOrder(Context objContext, String[] strOpenID, String[] strFoodID, String[] strNameFood, String[] strHotLevel, String[] strAmount, String[] strPriceFood){
         this.objContext = objContext;
         this.strOpenID = strOpenID;
         this.strFoodID = strFoodID;

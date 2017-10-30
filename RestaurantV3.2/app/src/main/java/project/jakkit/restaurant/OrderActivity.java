@@ -46,8 +46,8 @@ public class OrderActivity extends ActionBarActivity {
     private TextView txtShowTable, txtShowOfficer;
     private String strOfficer, strTable, strFood, strAmount, strHotLevel, strPrice, strNumFood,
                    strUserID, strDate, strHotname, strDoubleAmount, strDoubleOpenID, strDoubleTableID,
-                   strDoubleFoodID, strDoubleHot;
-    private int intListO=1, intCheckOrder;
+                   strDoubleFoodID, strDoubleHot, strCheckOrder="0";
+    private int intListO=1, intCheckOrder=0, intCheckDoubleOrder=0;
 
     ConnectionClass connectionClass;
     ProgressDialog progressDialog;
@@ -150,7 +150,6 @@ public class OrderActivity extends ActionBarActivity {
             public void onClick(DialogInterface dialog, int which) {
 
                 switch (which) {
-
                     case 0:
                         strAmount = "1";
                         break;
@@ -166,7 +165,6 @@ public class OrderActivity extends ActionBarActivity {
                     case 4:
                         strAmount = "5";
                         break;
-
                 }   // switch
                 dialog.dismiss();
 
@@ -230,13 +228,7 @@ public class OrderActivity extends ActionBarActivity {
         objBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                synCheckDoubleOrder();
-                if (intCheckOrder<1){
-                    upOrderToMySQL();
-                    onPreExecute();
-                }
-
- //               CheckDoubleOrder();
+                synCheckNullOrder();
 
                 dialog.dismiss();
             }
@@ -249,19 +241,126 @@ public class OrderActivity extends ActionBarActivity {
         });
         objBuilder.show();
     }   // confirmOrder
+
+    private void synCheckNullOrder() {
+        //Setup New Policy
+        if (Build.VERSION.SDK_INT > 9) {
+            StrictMode.ThreadPolicy objPolicy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+            StrictMode.setThreadPolicy(objPolicy);
+        }//Create InputStream
+        strTable = getIntent().getExtras().getString("Table");
+        InputStream objInputStream = null;
+        String strJSON = "";
+        try {
+
+            HttpClient objHttpClient = new DefaultHttpClient();
+            HttpPost objHttpPost = new HttpPost("http://192.168.1.90/count_list_order.php");
+            HttpResponse objHttpResponse = objHttpClient.execute(objHttpPost);
+            HttpEntity objHttpEntity = objHttpResponse.getEntity();
+            objInputStream = objHttpEntity.getContent();
+
+        } catch (Exception e) {
+            Log.d("oic", "InputStream ==> " + e.toString());
+        }//Create strJSON
+        try {
+            BufferedReader objBufferedReader = new BufferedReader(new InputStreamReader(objInputStream, "UTF-8"));
+            StringBuilder objStringBuilder = new StringBuilder();
+            String strLine = null;
+            while ((strLine = objBufferedReader.readLine()) != null) {
+                objStringBuilder.append(strLine);
+            }   // while
+            objInputStream.close();
+            strJSON = objStringBuilder.toString();
+
+        } catch (Exception e) {
+            Log.d("oic", "strJSON ==> " + e.toString());
+        }
+        //UpData SQLite
+        try {
+            final JSONArray objJsonArray = new JSONArray(strJSON);
+            for (int j = 0; j < objJsonArray.length(); j++) {
+                JSONObject objJSONObject = objJsonArray.getJSONObject(j);
+                String strCountOrder = objJSONObject.getString("COUNT(*)");
+                if (strCheckOrder.equals(strCountOrder)){
+                    upOrderToMySQL();
+                    onPreExecute();
+                    break;
+                }else {
+                     synCheckDoubleOrder();
+ //                   synCheckNullSendOrder();
+                    break;
+                }
+            }
+        } catch (Exception e) {
+            Log.d("oic", "Update ==> " + e.toString());
+        }
+    }
+
+    private void synCheckNullSendOrder() {
+        //Setup New Policy
+        if (Build.VERSION.SDK_INT > 9) {
+            StrictMode.ThreadPolicy objPolicy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+            StrictMode.setThreadPolicy(objPolicy);
+        }//Create InputStream
+        strTable = getIntent().getExtras().getString("Table");
+        InputStream objInputStream = null;
+        String strJSON = "";
+        try {
+
+            HttpClient objHttpClient = new DefaultHttpClient();
+            HttpPost objHttpPost = new HttpPost("http://192.168.1.90/count_check_order.php");
+            HttpResponse objHttpResponse = objHttpClient.execute(objHttpPost);
+            HttpEntity objHttpEntity = objHttpResponse.getEntity();
+            objInputStream = objHttpEntity.getContent();
+
+        } catch (Exception e) {
+            Log.d("oic", "InputStream ==> " + e.toString());
+        }//Create strJSON
+        try {
+            BufferedReader objBufferedReader = new BufferedReader(new InputStreamReader(objInputStream, "UTF-8"));
+            StringBuilder objStringBuilder = new StringBuilder();
+            String strLine = null;
+            while ((strLine = objBufferedReader.readLine()) != null) {
+                objStringBuilder.append(strLine);
+            }   // while
+            objInputStream.close();
+            strJSON = objStringBuilder.toString();
+
+        } catch (Exception e) {
+            Log.d("oic", "strJSON ==> " + e.toString());
+        }
+        //UpData SQLite
+        try {
+            final JSONArray objJsonArray = new JSONArray(strJSON);
+            for (int j = 0; j < objJsonArray.length(); j++) {
+                JSONObject objJSONObject = objJsonArray.getJSONObject(j);
+                String strCountSendOrder = objJSONObject.getString("COUNT(*)");
+                Integer intCountSendOrder = Integer.parseInt(strCountSendOrder);
+
+                if (intCountSendOrder >= 1){
+                    upOrderToMySQL();
+                    onPreExecute();
+                    break;
+                }else {
+                    synCheckDoubleOrder();
+                }
+            }
+        } catch (Exception e) {
+            Log.d("oic", "Update ==> " + e.toString());
+        }
+    }
+
     private void synCheckDoubleOrder(){
         if (Build.VERSION.SDK_INT > 9) {
             StrictMode.ThreadPolicy objPolicy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
             StrictMode.setThreadPolicy(objPolicy);
-        }
-
+        }        //Create InputStream
         strTable = getIntent().getExtras().getString("Table");
-        //Create InputStream
         InputStream objInputStream = null;
         String strJSON = "";
         try {
             HttpClient objHttpClient = new DefaultHttpClient();
-            HttpPost objHttpPost = new HttpPost("http://192.168.1.90/join_order.php");
+            HttpPost objHttpPost = new HttpPost("http://192.168.1.90/join_order_double.php");
             HttpResponse objHttpResponse = objHttpClient.execute(objHttpPost);
             HttpEntity objHttpEntity = objHttpResponse.getEntity();
             objInputStream = objHttpEntity.getContent();
@@ -274,18 +373,17 @@ public class OrderActivity extends ActionBarActivity {
             BufferedReader objBufferedReader = new BufferedReader(new InputStreamReader(objInputStream, "UTF-8"));
             StringBuilder objStringBuilder = new StringBuilder();
             String strLine = null;
-
             while ((strLine = objBufferedReader.readLine()) != null) {
                 objStringBuilder.append(strLine);
-            }   // while
+            }   // while}
             objInputStream.close();
             strJSON = objStringBuilder.toString();
         } catch (Exception e) {
             Log.d("oic", "strJSON ==> " + e.toString());
         }
-        //UpData SQLite
         try {
             final JSONArray objJsonArray = new JSONArray(strJSON);
+            String strCheckDoubleOrder="0";
             for (int i = 0; i < objJsonArray.length(); i++) {
                 JSONObject objJSONObject = objJsonArray.getJSONObject(i);
                 strDoubleOpenID = objJSONObject.getString("order_openTable");
@@ -294,19 +392,17 @@ public class OrderActivity extends ActionBarActivity {
                 strDoubleAmount = objJSONObject.getString("order_amount");
                 strDoubleHot = objJSONObject.getString("listO_hot");
 
-                Log.d("CheckDoubleOrder", "CheckTableData ==> " + strDoubleTableID);
-                Log.d("CheckDoubleOrder", "CheckTable ==> " + strTable);
-                Log.d("CheckDoubleOrder", "CheckFoodIDData ==> " + strDoubleFoodID);
-                Log.d("CheckDoubleOrder", "CheckFoodID ==> " + strNumFood);
-                Log.d("CheckDoubleOrder", "CheckHotData ==> " + strDoubleHot);
-                Log.d("CheckDoubleOrder", "CheckHot ==> " + strHotLevel);
-
-                intCheckOrder=0;
                 if (strDoubleTableID.equals(strTable) && strDoubleFoodID.equals(strNumFood) && strDoubleHot.equals(strHotLevel)){
                     upOrderDoubleToMySQL();
                     onPreExecute();
-                    intCheckOrder=1;
+                    strCheckDoubleOrder="1";
+                    break;
                 }
+            }
+            Log.d("CheckDoubleOrder", "เข้าไหม ==> " + strCheckDoubleOrder);
+            if (strCheckDoubleOrder.equals("0")){
+                upOrderToMySQL();
+                onPreExecute();
             }
         } catch (Exception e) {
             Log.d("oic", "Update ==> " + e.toString());
@@ -357,8 +453,8 @@ public class OrderActivity extends ActionBarActivity {
                         Log.d("upOrderToMySQL", "DATE ==> " + strDate);
                         Log.d("upOrderToMySQL", "Amount ==> " + strAmount);
 
-                    String query = "insert into data_listorder values('" + intListO + "','" + strNumFood + "','" + strHotLevel + "','" + strTable + "','" + strUserID + "','" + strDate + "')";
-                    String query2 = "insert into data_order values(NULL,'" + intListO + "','" + strAmount + "',' 1 ',' 1 ')";
+                    String query = "insert into data_listorder values('" + intListO + "','" + strNumFood + "','" + strHotLevel + "','" + strTable + "','" + strDate + "','" + strUserID + "')";
+                    String query2 = "insert into data_order values(NULL,'" + intListO + "','" + strAmount + "','1','1','1')";
 
                     Statement stmt = con.createStatement();
                     stmt.executeUpdate(query);
@@ -444,15 +540,14 @@ public class OrderActivity extends ActionBarActivity {
         try {
 
             HttpClient objHttpClient = new DefaultHttpClient();
-            HttpPost objHttpPost = new HttpPost("http://192.168.1.90/count_list_order.php");
+            HttpPost objHttpPost = new HttpPost("http://192.168.1.90/count_listorder.php");
             HttpResponse objHttpResponse = objHttpClient.execute(objHttpPost);
             HttpEntity objHttpEntity = objHttpResponse.getEntity();
             objInputStream = objHttpEntity.getContent();
 
         } catch (Exception e) {
             Log.d("oic", "InputStream ==> " + e.toString());
-        }
-        //Create strJSON
+        }//Create strJSON
         try {
             BufferedReader objBufferedReader = new BufferedReader(new InputStreamReader(objInputStream, "UTF-8"));
             StringBuilder objStringBuilder = new StringBuilder();
@@ -481,11 +576,39 @@ public class OrderActivity extends ActionBarActivity {
         }
     }
     public void clicklogout(View view){
-        Intent intent = new Intent(OrderActivity.this, MainActivity.class);
-        startActivity(intent);
+        AlertDialog.Builder objBuilder = new AlertDialog.Builder(this);
+        objBuilder.setIcon(R.drawable.danger);
+        objBuilder.setTitle("คำเตือน !");
+        objBuilder.setMessage("[" + strOfficer + "] คุณต้องการออกจากระบบร้านอาหาร");
+        objBuilder.setCancelable(false);
+        objBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Intent objIntent = new Intent(OrderActivity.this, MainActivity.class);
+                startActivity(objIntent);
+                dialog.dismiss();
+
+                finish();
+            }
+        });
+        objBuilder.setNegativeButton("Cancle", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+                dialog.dismiss();
+            }
+        });
+        objBuilder.show();
     }
     public void clickListOrder(View view){
         Intent intent = new Intent(OrderActivity.this, ListOrderActivity.class);
+        intent.putExtra("Officer", strOfficer);
+        intent.putExtra("IDofficer", strUserID);
+        intent.putExtra("Table", strTable);
+        startActivity(intent);
+    }
+    public void clickListOrderOut(View view){
+        Intent intent = new Intent(OrderActivity.this, ListConfirmSendOrderActivity.class);
         intent.putExtra("Officer", strOfficer);
         intent.putExtra("IDofficer", strUserID);
         intent.putExtra("Table", strTable);
@@ -496,6 +619,12 @@ public class OrderActivity extends ActionBarActivity {
         intent.putExtra("Officer", strOfficer);
         intent.putExtra("IDofficer", strUserID);
         intent.putExtra("Table", strTable);
+        startActivity(intent);
+    }
+    public void clickhome(View view){
+        Intent intent = new Intent(OrderActivity.this, IndexMain.class);
+        intent.putExtra("Officer", strOfficer);
+        intent.putExtra("IDofficer", strUserID);
         startActivity(intent);
     }
     @Override

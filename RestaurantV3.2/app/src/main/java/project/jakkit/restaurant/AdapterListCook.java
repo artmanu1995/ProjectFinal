@@ -39,7 +39,7 @@ public class AdapterListCook extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         LayoutInflater objLayoutInflater = (LayoutInflater) objContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View view = objLayoutInflater.inflate(R.layout.listview_cook_row1, parent, false);
+        View view = objLayoutInflater.inflate(R.layout.listview_cook_row, parent, false);
 
         TextView listTableID = (TextView) view.findViewById(R.id.txtShowTableID);
         listTableID.setText(strTableID[position]);
