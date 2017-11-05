@@ -1,0 +1,6 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<info>
+	<infoitem key="UD_setReprot" value="name:food_name;datatype:blob,name:order_amount;datatype:int,name:food_price;datatype:int" />
+	<infoitem key="UD_setReport" value="name:food_name;datatype:blob,name:order_amount;datatype:int,name:food_price;datatype:int" />
+	<infoitem key="UD_setTotal" value="name:total;datatype:real" />
+</info>
