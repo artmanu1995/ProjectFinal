@@ -1,0 +1,4 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<info>
+	<infoitem key="UD_setUpdateFood" value="name:food_id;datatype:int,name:food_name;datatype:blob,name:food_price;datatype:int" />
+</info>

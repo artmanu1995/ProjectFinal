@@ -112,7 +112,7 @@ $totalRows_setValueTable = mysql_num_rows($setValueTable);
 </head>
 
 <body>
-<table width="40%" border="0" align="center">
+<table width="40%" border="0" align="center" cellspacing="0">
   <tr>
     <td valign="middle"><center><form id="form1" name="form1" method="POST" action="http://localhost/ProjectFinal/Web/Test_update_sttTable.php">
         <label for="valueTable"></label>
