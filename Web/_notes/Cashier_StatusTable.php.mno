@@ -1,0 +1,4 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<info>
+	<infoitem key="UD_setSttTable" value="name:table_id;datatype:int,name:sttOFT_name;datatype:blob" />
+</info>

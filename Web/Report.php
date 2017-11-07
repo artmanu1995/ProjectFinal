@@ -39,7 +39,7 @@ if (isset($_POST['kon'])) {
   $colname_setReport = $_POST['kon'];
 }
 mysql_select_db($database_connect_restaurant, $connect_restaurant);
-$query_setReport = sprintf("SELECT food_name, order_amount, food_price FROM data_listorder INNER JOIN data_order ON  data_listorder.listO_id = data_order.listO_id INNER JOIN data_foods ON  data_listorder.food_id = data_foods.food_id WHERE (sttSO_id=0) AND (sttCS_id=0) AND (sttPay_id=1) AND (table_id=%s)", GetSQLValueString($colname_setReport, "int"));
+$query_setReport = sprintf("SELECT order_openTable, food_name, order_amount, food_price, (order_amount*food_price) AS KOON FROM data_listorder INNER JOIN data_order ON  data_listorder.listO_id = data_order.listO_id INNER JOIN data_foods ON  data_listorder.food_id = data_foods.food_id WHERE (sttSO_id=0) AND (sttCS_id=0) AND (sttPay_id=1) AND (table_id=%s)", GetSQLValueString($colname_setReport, "int"));
 $setReport = mysql_query($query_setReport, $connect_restaurant) or die(mysql_error());
 $row_setReport = mysql_fetch_assoc($setReport);
 $totalRows_setReport = mysql_num_rows($setReport);
@@ -53,6 +53,12 @@ $query_setTotal = sprintf("SELECT SUM(order_amount*food_price) AS total FROM dat
 $setTotal = mysql_query($query_setTotal, $connect_restaurant) or die(mysql_error());
 $row_setTotal = mysql_fetch_assoc($setTotal);
 $totalRows_setTotal = mysql_num_rows($setTotal);
+
+mysql_select_db($database_connect_restaurant, $connect_restaurant);
+$query_setOpentabel = "SELECT COUNT(*) FROM data_payment";
+$setOpentabel = mysql_query($query_setOpentabel, $connect_restaurant) or die(mysql_error());
+$row_setOpentabel = mysql_fetch_assoc($setOpentabel);
+$totalRows_setOpentabel = mysql_num_rows($setOpentabel);
 
 $kid=0;
 $kid=(empty($_POST['kid'])?0:$_POST['kid']);
@@ -125,6 +131,9 @@ body,td,th {
 	#titleText{
 		display:none;
 	}
+  #sumToMySQL{
+    display:none;
+  }
 	#kid{
 		width:100%
 	}
@@ -133,6 +142,52 @@ body,td,th {
   }
 }
 </style>
+<style> 
+        select {
+            width: 15%;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            background-color: #f1f1f1;
+        }
+  </style>
+  <style>
+          .button {
+              background-color: #4CAF50; /* Green */
+              border: none;
+              color: white;
+              padding: 7px 30px;
+              text-align: center;
+              text-decoration: none;
+              display: inline-block;
+              font-size: 16px;
+              margin: 4px 2px;
+              -webkit-transition-duration: 0.4s;
+              transition-duration: 0.4s;
+              cursor: pointer;
+          }
+          .button2 {
+              background-color: #0fc15a; 
+              color: white; 
+              border: 2px solid #0fc15a;
+          }
+
+          .button2:hover {
+              background-color: white;
+              color: black;
+          }
+          .button3 {
+              padding: 10px 20px;
+              background-color: #ffa700; 
+              color: white; 
+              border: 2px solid #ffa700;
+          }
+
+          .button3:hover {
+              background-color: white;
+              color: black;
+          }
+  </style>
 </head>
 
 <body>
@@ -175,17 +230,19 @@ body,td,th {
         <div id="dateTime">วันที่ <?php echo $today_date ?></div>
         <div class="dataKid"></div>
         <div class="TableReport">
-          <table width="100%" border="1" align="center" cellpadding="0" cellspacing="0" bordercolor="#CCCCCC">
+          <table width="100%" border="1" align="center" cellpadding="0" cellspacing="0" bordercolor="#ddd">
             <tr>
-              <th width="43%" height="38" align="center" valign="middle" bgcolor="#D8D8D8" scope="col">อาหาร</th>
-              <th width="27%" align="center" valign="middle" bgcolor="#D8D8D8" scope="col">จำนวน</th>
-              <th width="30%" align="center" valign="middle" bgcolor="#D8D8D8" scope="col">ราคา</th>
+              <th width="28%" height="38" align="center" valign="middle" bgcolor="#D8D8D8" scope="col">อาหาร</th>
+              <th width="23%" align="center" valign="middle" bgcolor="#D8D8D8" scope="col">จำนวน</th>
+              <th width="24%" align="center" valign="middle" bgcolor="#D8D8D8" scope="col">ราคา/หน่วย</th>
+              <th width="25%" align="center" valign="middle" bgcolor="#D8D8D8" scope="col">รวมหน่วย</th>
             </tr>
             <?php do { ?>
               <tr>
                 <td valign="middle"><?php echo $row_setReport['food_name']; ?></td>
                 <td align="center" valign="middle"><?php echo $row_setReport['order_amount']; ?></td>
                 <td align="center" valign="middle"><?php echo $row_setReport['food_price']; ?></td>
+                <td align="center" valign="middle"><?php echo $row_setReport['KOON']; ?></td>
               </tr>
               <?php } while ($row_setReport = mysql_fetch_assoc($setReport)); ?>
           </table>
@@ -195,13 +252,13 @@ body,td,th {
             <tr>
               <th width="59%" height="45" align="center" valign="middle" scope="col">&nbsp;</th>
               <td width="14%" align="left" valign="middle" scope="col">ยอดชำระ</td>
-              <td width="27%" align="center" valign="middle" bgcolor="#F5F5F5" scope="col"><?php echo $row_setTotal['total']; ?></td>
+              <td width="27%" align="left" valign="middle" scope="col"><strong><?php echo $row_setTotal['total']; ?></strong></td>
             </tr>
             <tr>
               <td valign="middle">&nbsp;</td>
               <td align="left" valign="middle">เงินสด</td>
               <td align="left" valign="middle"><label for="kid"></label>
-                <input type="text" name="kid" id="kid" value="<?php echo($kid)?>" size="10%"/>
+                <input type="text" name="kid" id="kid"  value="<?php echo($kid)?>" size="10%"/>
                 <button type="submit" name="subkid" id="subkid">คำนวณเงินทอน</button></td>
             </tr>
             <tr>
@@ -210,6 +267,11 @@ body,td,th {
               <td align="left" valign="middle">
                 <input type="text" name="kong" id="kong" size="10" value="<?php echo ($kong)?>"/>
               </td>
+            </tr>
+            <tr>
+              <td valign="middle">&nbsp;</td>
+              <td align="left" valign="middle">&nbsp;</td>
+              <td align="left" valign="middle"><button type="submit" name="subToMySQL" id="subToMySQL" onclick="subToMySQL()">บันทึก</button></td>
             </tr>
             <tr>
               <td valign="middle">&nbsp;</td>
@@ -230,7 +292,8 @@ body,td,th {
       </div>
         </p>
   </div>
-      <p>&nbsp;</p>
+      <p>
+    </p>
     </form></td>
   </tr>
 </table>
@@ -240,4 +303,7 @@ body,td,th {
 mysql_free_result($setReport);
 
 mysql_free_result($setTotal);
+
+mysql_free_result($setOpentabel);
 ?>
+

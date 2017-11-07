@@ -1,0 +1,5 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<info>
+	<infoitem key="UD_setDataTable" value="name:table_id;datatype:int,name:sttTable_name;datatype:blob" />
+	<infoitem key="UD_setValueTable" value="name:COUNT(*);datatype:int" />
+</info>

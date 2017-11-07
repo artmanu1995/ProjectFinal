@@ -38,7 +38,7 @@ if ((isset($_GET['user_id'])) && ($_GET['user_id'] != "")) {
   mysql_select_db($database_connect_restaurant, $connect_restaurant);
   $Result1 = mysql_query($deleteSQL, $connect_restaurant) or die(mysql_error());
 
-  $deleteGoTo = "Admin_data_user.php";
+  $deleteGoTo = "http://localhost/ProjectFinal/Web/Admin_user.php";
   if (isset($_SERVER['QUERY_STRING'])) {
     $deleteGoTo .= (strpos($deleteGoTo, '?')) ? "&" : "?";
     $deleteGoTo .= $_SERVER['QUERY_STRING'];

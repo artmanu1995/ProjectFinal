@@ -1,0 +1,5 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<info>
+	<infoitem key="UD_setPosition" value="name:position_id;datatype:int,name:position_name;datatype:blob" />
+	<infoitem key="UD_setUpdateUser" value="name:user_id;datatype:int,name:user_username;datatype:blob,name:user_password;datatype:blob,name:user_name;datatype:blob,name:position_id;datatype:int" />
+</info>
