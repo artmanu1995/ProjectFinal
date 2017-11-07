@@ -1,0 +1,4 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<info>
+	<infoitem key="UD_setOrderUpPay" value="name:order_openTable;datatype:int,name:listO_id;datatype:int,name:order_amount;datatype:int,name:sttPay_id;datatype:int,name:sttSO_id;datatype:int,name:sttCS_id;datatype:int" />
+</info>

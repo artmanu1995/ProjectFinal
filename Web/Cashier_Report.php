@@ -104,11 +104,17 @@ function GetSQLValueString($theValue, $theType, $theDefinedValue = "", $theNotDe
   return $theValue;
 }
 }
+
+$editFormAction = $_SERVER['PHP_SELF'];
+if (isset($_SERVER['QUERY_STRING'])) {
+  $editFormAction .= "?" . htmlentities($_SERVER['QUERY_STRING']);
+}
+
+
 date_default_timezone_set('Asia/Bangkok');
 $today_date=date("Y-m-d [H : i : s]");
 $date=date("Y-m-d H:i:s");
 
-$kon=(empty($_POST['kon'])?1:$_POST['kon']);
 $colname_setReport = "-1";
 if (isset($_POST['kon'])) {
   $colname_setReport = $_POST['kon'];
@@ -148,10 +154,13 @@ $totalRows_setCountReport = mysql_num_rows($setCountReport);
 $total= $row_setTotal['total'];
 $opent = $row_setReport['order_openTable'];
 
-$payid = $query_setOpentabel+1;
+$one=1;
+$payid = $one + $row_setOpentabel['COUNT(*)'];
 
 $kid=(empty($_POST['kid'])?0:$_POST['kid']);
 $kong=$kid-$row_setTotal['total'];
+$kon=(empty($_POST['kon'])?1:$_POST['kon']);
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -351,11 +360,10 @@ $kong=$kid-$row_setTotal['total'];
     <div class="container">
       <div class="row">
         <div class="col-lg-12 text-center">
-        <h3 class="mt-5">ออกบิลค่าอาหาร</h3>
-        <p>
+        <h3 class="mt-5">ออกบิลค่าอาหาร</h3><p>
           <table width="100%" border="0" align="center">
   <tr>
-    <td align="left" valign="middle"><form id="form1" name="form1" method="post" action="">
+    <td align="left" valign="middle"><form id="form1" name="form1" method="POST" action="<?php echo $editFormAction; ?>">
       <table width="40%" border="0" align="center">
         <tr>
           <td align="center"><label id="titleText">เลือกโต๊ะ</label>
@@ -381,7 +389,7 @@ $kong=$kid-$row_setTotal['total'];
         </tr>
     </table>
       <div id="wrapAll">
-        <p><div id="reportID">รหัสใบเสร็จ : </div>
+        <p><div id="reportID">รหัสใบเสร็จ : <?php echo $payid?></div>
         <div id="dataTable">หมายเลขโต๊ะ : <?php echo $kon?></div>
         <div class="dataKid"></div>
         <div id="dateTime">วันที่ <?php echo $today_date ?></div>
@@ -389,10 +397,11 @@ $kong=$kid-$row_setTotal['total'];
         <div class="TableReport">
           <table width="100%" border="1" align="center" cellpadding="0" cellspacing="0" bordercolor="#ddd">
             <tr>
-              <td width="28%" height="38" align="center" valign="middle" bgcolor="#D8D8D8" scope="col"><strong>อาหาร</strong></td>
-              <td width="23%" align="center" valign="middle" bgcolor="#D8D8D8" scope="col"><strong>จำนวน</strong></td>
-              <td width="24%" align="center" valign="middle" bgcolor="#D8D8D8" scope="col"><strong>ราคา/หน่วย</strong></td>
-              <td width="25%" align="center" valign="middle" bgcolor="#D8D8D8" scope="col"><strong>รวมหน่วย</strong></td>
+              <td width="27%" height="38" align="center" valign="middle" bgcolor="#D8D8D8" scope="col"><strong>อาหาร</strong></td>
+              <td width="24%" align="center" valign="middle" bgcolor="#D8D8D8" scope="col"><strong>จำนวน</strong></td>
+              <td width="23%" align="center" valign="middle" bgcolor="#D8D8D8" scope="col"><strong>ราคา/หน่วย</strong></td>
+              <td width="23%" align="center" valign="middle" bgcolor="#D8D8D8" scope="col"><strong>รวมหน่วย</strong></td>
+              <td width="3%" align="center" valign="middle" bgcolor="#D8D8D8" scope="col">&nbsp;</td>
             </tr>
             <?php do { ?>
               <tr>
@@ -400,6 +409,7 @@ $kong=$kid-$row_setTotal['total'];
                 <td align="center" valign="middle"><?php echo $row_setReport['order_amount']; ?></td>
                 <td align="center" valign="middle"><?php echo $row_setReport['food_price']; ?></td>
                 <td align="center" valign="middle"><?php echo $row_setReport['KOON']; ?></td>
+                <td align="right" valign="middle"><a href="update_paymend.php?order_openTable=<?php echo $row_setReport['order_openTable']; ?>">OK</a></td>
               </tr>
               <?php } while ($row_setReport = mysql_fetch_assoc($setReport)); ?>
           </table>
@@ -430,14 +440,14 @@ $kong=$kid-$row_setTotal['total'];
   <tr>
     <td height="67">&nbsp;</td>
     <td>&nbsp;</td>
-    <td align="left"><button class="button button2" type="submit" name="subToMySQL" id="subToMySQL" onclick="subToMySQL()">บันทึก</button></td>
+    <td align="left"><button class = "button button2" type="submit" name="subToMySQL" id="subToMySQL" onclick="subToMySQL()">ยืนยันใบเสร็จ</button></td>
   </tr>
   <tr>
-    <td>&nbsp;</td>
+    <td height="67">&nbsp;</td>
     <td>&nbsp;</td>
     <td align="center"><button class = "button button4" type="submit" name="subprint" id="subprint" onclick="window.print()">พิมพ์ใบเสร็จ</button></td>
   </tr>
-</table>
+                </table>
               </div>
               <div class="TableReport">
           <table width="100%" border="0" align="center" cellpadding="0" cellspacing="0">
@@ -451,74 +461,6 @@ $kong=$kid-$row_setTotal['total'];
       </div>
         </p>
   </div>
-    <script>
-        function subToMySQL() {
-          InputStream objInputStream = null;
-        String strJSON = "";
-        try {
-
-            HttpClient objHttpClient = new DefaultHttpClient();
-            HttpPost objHttpPost = new HttpPost("http://192.168.1.90/ProjectFinal/Web/set_open_id.php");
-            HttpResponse objHttpResponse = objHttpClient.execute(objHttpPost);
-            HttpEntity objHttpEntity = objHttpResponse.getEntity();
-            objInputStream = objHttpEntity.getContent();
-
-        } catch (Exception e) {
-            Log.d("oic", "InputStream ==> " + e.toString());
-        }
-        //Create strJSON
-        try {
-            BufferedReader objBufferedReader = new BufferedReader(new InputStreamReader(objInputStream, "UTF-8"));
-            StringBuilder objStringBuilder = new StringBuilder();
-            String strLine = null;
-            while ((strLine = objBufferedReader.readLine()) != null) {
-                objStringBuilder.append(strLine);
-            }   // while
-            objInputStream.close();
-            strJSON = objStringBuilder.toString();
-
-        } catch (Exception e) {
-            Log.d("oic", "strJSON ==> " + e.toString());
-        }
-        //UpData SQLite
-        try {
-            final JSONArray objJsonArray = new JSONArray(strJSON);
-            for (int j = 0; j < objJsonArray.length(); j++) {
-                JSONObject objJSONObject = objJsonArray.getJSONObject(j);
-                String strTableID = objJSONObject.getString("table_id");
-                String strOpenTable = objJSONObject.getString("order_openTable");
-                Integer intableid = Integer.parseInt(strTableID);
-                Integer intopenid = Integer.parseInt(strOpenTable);
-
-                if ($kon=strTableID) {
-
-                          <?php
-                          $servername = "localhost";
-                          $username = "root";
-                          $password = "00112233";
-                          $dbname = "restaurant_db";
-                      
-                          try {
-                              $conn = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
-
-                              $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
-                                  $sql = "UPDATE data_order SET sttPay_id=0 WHERE order_openTable=intopenid";
-                                  $stmt = $conn->prepare($sql);
-                                  $stmt->execute();
-
-                          }catch(PDOException $e){
-                              echo $sql . "<br>" . $e->getMessage();
-                            }
-                          $conn = null;
-                          ?>
-                }
-            }
-        } catch (Exception e) {
-            Log.d("oic", "Update ==> " + e.toString());
-          }
-        }
-      </script>
     </form></td>
   </tr>
 </table>
@@ -528,6 +470,31 @@ $kong=$kid-$row_setTotal['total'];
     <!-- Bootstrap core JavaScript -->
     <script src="jquery/jquery.min.js"></script>
     <script src="js/bootstrap.bundle.min.js"></script>
+         <script>
+        function subToMySQL() {
+          <?php
+          $servername = "localhost";
+          $username = "root";
+          $password = "00112233";
+          $dbname = "restaurant_db";
+      
+
+          try {
+              $conn = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
+              // set the PDO error mode to exception
+              $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+                  $sql = "UPDATE data_onofftable SET sttOFT_id=0 WHERE table_id=$kon";
+                  $stmt = $conn->prepare($sql);
+                  $stmt->execute();
+
+          }catch(PDOException $e){
+              echo $sql . "<br>" . $e->getMessage();
+            }
+          $conn = null;
+          ?>
+        }
+      </script>
   </body>
 </html>
 <?php
